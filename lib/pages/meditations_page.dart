@@ -948,11 +948,11 @@ String _getPrayerImagePath(int id) {
   // Mapping explicite demandé par l’équipe
   switch (id) {
     case 1:
-      return 'assets/images/Papa Léon XIII.jpeg';
+      return 'assets/images/Papa_Leon_XIII.jpeg';
     case 2:
-      return 'assets/images/Saint Louis Gonzague.jpg';
+      return 'assets/images/Saint_Louis_Gonzague.jpg';
     case 3:
-      return 'assets/images/Pape François.jpg';
+      return 'assets/images/Pape_Francois.jpg';
     default:
       // Fallback générique si de nouvelles prières arrivent sans image dédiée
       switch (id % 5) {

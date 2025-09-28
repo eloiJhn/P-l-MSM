@@ -60,20 +60,19 @@ void main() {
     }).toSet();
 
     expect(
-      assetNames.contains('assets/images/Papa Léon XIII.jpeg'),
+      assetNames.contains('assets/images/Papa_Leon_XIII.jpeg'),
       isTrue,
       reason: 'Image du Pape Léon XIII manquante',
     );
     expect(
-      assetNames.contains('assets/images/Saint Louis Gonzague.jpg'),
+      assetNames.contains('assets/images/Saint_Louis_Gonzague.jpg'),
       isTrue,
       reason: 'Image de Saint Louis de Gonzague manquante',
     );
     expect(
-      assetNames.contains('assets/images/Pape François.jpg'),
+      assetNames.contains('assets/images/Pape_Francois.jpg'),
       isTrue,
       reason: 'Image du Pape François manquante',
     );
   });
 }
-

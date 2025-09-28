@@ -85,9 +85,9 @@ flutter:
     - assets/images/15.jpg
     - assets/images/Mont_St_Michel.jpg
     # Images spécifiques pour les prières
-    - "assets/images/Papa Léon XIII.jpeg"
-    - "assets/images/Saint Louis Gonzague.jpg"
-    - "assets/images/Pape François.jpg"
+    - assets/images/Papa_Leon_XIII.jpeg
+    - assets/images/Saint_Louis_Gonzague.jpg
+    - assets/images/Pape_Francois.jpg
     - assets/images/Baie1.jpeg
     - assets/images/Baie2.jpeg
     - assets/images/Baie3.jpg
