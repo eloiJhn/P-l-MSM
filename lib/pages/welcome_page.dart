@@ -47,7 +47,8 @@ class WelcomePage extends StatelessWidget {
                   child: SvgPicture.asset(
                     'assets/images/logo_msm_transparent.svg',
                     height: 72,
-                    colorFilter: const ColorFilter.mode(kBlanc, BlendMode.srcIn),
+                    colorFilter:
+                        const ColorFilter.mode(kBlanc, BlendMode.srcIn),
                   ),
                 ),
                 const SizedBox(height: 160),
@@ -57,7 +58,8 @@ class WelcomePage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.92),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: kOutremer.withOpacity(0.2), width: 1),
+                    border:
+                        Border.all(color: kOutremer.withOpacity(0.2), width: 1),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.06),
@@ -73,7 +75,8 @@ class WelcomePage extends StatelessWidget {
                       children: [
                         Center(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: kDore.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
@@ -102,15 +105,18 @@ class WelcomePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 18),
-                        _p('Cher ami,\nBienvenue à notre pèlerinage des jeunes du Grand Ouest au Mont Saint-Michel ! Que ce soit une expérience nouvelle pour toi ou que tu sois déjà un pèlerin chevronné, nous sommes heureux de marcher avec toi.'),
+                        _p('Cher amii,\nBienvenue à notre pèlerinage des jeunes du Grand Ouest au Mont Saint-Michel ! Que ce soit une expérience nouvelle pour toi ou que tu sois déjà un pèlerin chevronné, nous sommes heureux de marcher avec toi.'),
                         const SizedBox(height: 12),
                         _p("Ce rocher, dressé au cœur de la baie, pointant vers le ciel, n’est pas seulement un chef-d’œuvre de nature et d’architecture, c’est aussi un signe spirituel puissant. Depuis plus de mille ans, il attire pèlerins, chercheurs de Dieu, aventuriers de la foi."),
                         const SizedBox(height: 12),
                         _p('Notre thème est simple et radical : « Soyez saints » (1 P 1,16). Une parole, ciselée comme un rocher, qui frappe et met en marche. La sainteté n’est pas réservée à quelques moines, prêtres ou grandes figures canonisées. Elle est l’appel adressé à chacun de nous, étudiants, jeunes pros, au cœur de nos études ou de notre travail, de nos choix d’avenir, de nos amitiés, de nos combats.'),
                         const SizedBox(height: 14),
-                        _bullet('Comme saint Michel, nous sommes appelés à mettre Dieu au centre, et à proclamer par notre vie : « Qui est comme Dieu ? »'),
-                        _bullet('Comme le Mont, enraciné dans le rocher et tendu vers le ciel, nous sommes invités à construire nos vies sur le Christ, solides dans la foi.'),
-                        _bullet('Comme les générations de pèlerins avant nous, nous avançons ensemble, en frères et sœurs, vers le Christ qui nous attire à lui.'),
+                        _bullet(
+                            'Comme saint Michel, nous sommes appelés à mettre Dieu au centre, et à proclamer par notre vie : « Qui est comme Dieu ? »'),
+                        _bullet(
+                            'Comme le Mont, enraciné dans le rocher et tendu vers le ciel, nous sommes invités à construire nos vies sur le Christ, solides dans la foi.'),
+                        _bullet(
+                            'Comme les générations de pèlerins avant nous, nous avançons ensemble, en frères et sœurs, vers le Christ qui nous attire à lui.'),
                         const SizedBox(height: 14),
                         _p('Vivons ce temps de pèlerinage comme une parabole de notre vie : un chemin où l’effort se fait sentir, parfois troublé par les sables mouvants, mais orienté vers un but lumineux qui nous attire et nous guide.'),
                         const SizedBox(height: 12),
@@ -159,7 +165,8 @@ class WelcomePage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 8),
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(color: kDore, shape: BoxShape.circle),
+              decoration:
+                  const BoxDecoration(color: kDore, shape: BoxShape.circle),
             ),
             const SizedBox(width: 10),
             Expanded(
