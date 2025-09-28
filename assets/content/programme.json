@@ -1,0 +1,38 @@
+{
+  "days": [
+    {
+      "date": "2025-10-11",
+      "label": "Samedi",
+      "entries": [
+        { "time": "10:30", "title": "Introduction au pélérinage"},
+        { "time": "11:00", "title": "Départ de la marche", "place": "Le Vivier-sur-Mer"},
+        { "time": "12:30", "title": "Pique-nique en frat", "place": "Mont Dol" },
+        { "time": "14:30", "title": "Prédication à la cathédrale de Dol", "place": "Cathédrale de Dol", "notes": " suivi de l'adoration et de confessions"},
+        { "time": "16:00", "title": "Temps en diocèse/aumônerie"},
+        { "time": "17:30", "title": "Vêpres", "place": "Cathédrale"},
+        { "time": "18:00", "title": "Départ en car", "place": "Ardevon"},
+        { "time": "18:30", "title": "Installation", "place": "Prieuré"},
+        { "time": "19:30", "title": "Dîner"},
+        { "time": "20:30", "title": "Veillée au coin du feu"},
+        { "time": "22:00", "title": "Coucher"}
+      ]
+    },
+    {
+      "date": "2025-10-12",
+      "label": "Dimanche",
+      "entries": [
+        { "time": "05:00", "title": "Lever + petit déjeuner"},
+        { "time": "06:00", "title": "Départ en car", "place": "Bec d'Andaine" },
+        { "time": "07:00", "title": "Traversée de la baie" },
+        { "time": "09:30", "title": "Arrivée au Mont Saint Michel" },
+        { "time": "10:00", "title": "Messe", "place": "Abbatiale" },
+        { "time": "12:00", "title": "Pique-nique en frat", "notes": "Temps libre" },
+        { "time": "13:30", "title": "Retour au prieuré d'Ardevon" },
+        { "time": "14:30", "title": "Rangement" },
+        { "time": "15:30", "title": "Mot d'envoi" },
+        { "time": "16:00", "title": "Départ" }
+      ]
+    }
+  ]
+}
+
