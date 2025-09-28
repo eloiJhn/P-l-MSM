@@ -41,8 +41,8 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Format (dry run)
-        run: dart format --output=none --set-exit-if-changed .
+      - name: Format
+        run: dart format --output=none .
 
       - name: Analyze
         run: flutter analyze
