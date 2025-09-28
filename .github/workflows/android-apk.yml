@@ -76,12 +76,9 @@ jobs:
           name: pelerinage_msm-apk
           path: dist/pelerinage_msm.apk
           if-no-files-found: error
-    outputs:
-      publish: ${{ inputs.publish || 'true' }}
 
   pages:
     needs: build
-    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -89,6 +86,31 @@ jobs:
         with:
           name: pelerinage_msm-apk
           path: public
+
+      - name: Create index.html
+        run: |
+          cat > public/index.html <<'HTML'
+          <!doctype html>
+          <html lang="fr">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>Télécharger l’APK — Pèlerinage MSM</title>
+            <style>
+              body{font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:40px; color:#0b1d26}
+              a.btn{display:inline-block; padding:12px 18px; background:#1692AD; color:#fff; text-decoration:none; border-radius:8px}
+              .hint{margin-top:12px; color:#555}
+            </style>
+          </head>
+          <body>
+            <h1>Pèlerinage Saint‑Michel — APK Android</h1>
+            <p>
+              <a class="btn" href="pelerinage_msm.apk" download>➡️ Télécharger l’APK</a>
+            </p>
+            <p class="hint">Depuis Android, autorisez l’installation de sources inconnues si demandé.</p>
+          </body>
+          </html>
+          HTML
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -118,4 +140,3 @@ jobs:
           generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
