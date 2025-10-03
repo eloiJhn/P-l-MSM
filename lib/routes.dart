@@ -12,6 +12,9 @@ const String routeProgramme = '/programme';
 const String routeChants = '/chants';
 const String routeMeditations = '/meditations';
 
+// Historique de navigation global (partagé entre toutes les instances)
+final _navigationHistory = <int>[0];
+
 final GoRouter goRouter = GoRouter(
   initialLocation: routeWelcome,
   routes: [
@@ -73,6 +76,28 @@ class _RootScaffoldState extends State<RootScaffold> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Ajouter la page actuelle à l'historique au démarrage
+    final currentIndex = _currentIndex;
+    if (_navigationHistory.isEmpty || _navigationHistory.last != currentIndex) {
+      _navigationHistory.add(currentIndex);
+    }
+  }
+
+  @override
+  void didUpdateWidget(RootScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Mettre à jour l'historique quand on change de page
+    if (oldWidget.location != widget.location) {
+      final newIndex = _currentIndex;
+      if (_navigationHistory.isEmpty || _navigationHistory.last != newIndex) {
+        _navigationHistory.add(newIndex);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Espace dynamiquement la barre du bord bas: sur iPhone (home indicator),
     // on colle un peu plus (4px), sinon on laisse 8px.
@@ -83,7 +108,23 @@ class _RootScaffoldState extends State<RootScaffold> {
     final isWelcomePage = widget.location == routeWelcome;
     final currentIndex = _currentIndex;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        if (didPop) return;
+
+        // Naviguer vers la page précédente dans l'historique
+        if (_navigationHistory.length > 1) {
+          _navigationHistory.removeLast(); // Retire la page actuelle
+          final previousIndex = _navigationHistory.last;
+          final previousRoute = _tabs[previousIndex];
+          context.go(previousRoute);
+        } else if (currentIndex != 0) {
+          // Fallback: retourner à l'accueil si pas d'historique
+          context.go(routeWelcome);
+        }
+      },
+      child: Scaffold(
       body: SafeArea(
         top: !isWelcomePage,
         child: IndexedStack(
@@ -152,6 +193,7 @@ class _RootScaffoldState extends State<RootScaffold> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

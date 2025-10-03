@@ -17,3 +17,8 @@
 ## Local Notifications
 -keep class com.dexterous.** { *; }
 -dontwarn com.dexterous.**
+
+## Play Core (for Flutter deferred components - not used but Flutter references it)
+-dontwarn com.google.android.play.core.splitcompat.**
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**

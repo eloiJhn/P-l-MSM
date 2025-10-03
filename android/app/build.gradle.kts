@@ -19,7 +19,7 @@ val hasKeystore = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.pelerinage.msm"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -35,7 +35,7 @@ android {
     defaultConfig {
         applicationId = "com.pelerinage.msm"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
     }

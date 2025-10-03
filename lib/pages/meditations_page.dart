@@ -100,8 +100,9 @@ class MeditationsPage extends ConsumerWidget {
                             for (final p in prayers)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 12),
-                                child: _PrayerCard(
+                                child: _PrayerListCard(
                                   prayer: p,
+                                  isDarkMode: isDarkMode,
                                   onTap: () {
                                     Navigator.of(context).push(
                                       CupertinoPageRoute(
@@ -203,8 +204,8 @@ class _SegmentButton extends StatelessWidget {
               icon,
               size: 18,
               color: selected
-                  ? (isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine)
-                  : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.6)),
+                  ? kOutremer
+                  : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kOutremer, 0.7)),
             ),
             const SizedBox(width: 8),
             Text(
@@ -213,8 +214,8 @@ class _SegmentButton extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: selected
-                    ? (isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine)
-                    : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.7)),
+                    ? kOutremer
+                    : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kOutremer, 0.8)),
               ),
             ),
           ],
@@ -296,7 +297,7 @@ class _SectionTitle extends StatelessWidget {
                 title,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
+                  color: kOutremer,
                 ),
               ),
               if (subtitle != null)
@@ -317,10 +318,15 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _PrayerCard extends StatelessWidget {
-  const _PrayerCard({required this.prayer, required this.onTap});
+class _PrayerListCard extends StatelessWidget {
+  const _PrayerListCard({
+    required this.prayer,
+    required this.isDarkMode,
+    required this.onTap,
+  });
 
   final Prayer prayer;
+  final bool isDarkMode;
   final VoidCallback onTap;
 
   @override
@@ -330,93 +336,92 @@ class _PrayerCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          height: 220,
-          clipBehavior: Clip.antiAlias,
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _colorWithAlpha(kOutremer, 0.12), width: 1),
+            color: isDarkMode
+                ? const Color(0xFF1E1E1E)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.grey[800]!
+                  : _colorWithAlpha(kOutremer, 0.2),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: _colorWithAlpha(kMarine, 0.06),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
+                color: isDarkMode
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : _colorWithAlpha(kOutremer, 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          child: Stack(
+          child: Row(
             children: [
-              Positioned.fill(
-                child: Image.asset(
-                  _getPrayerImagePath(prayer.id),
-                  fit: BoxFit.cover,
-                  alignment: _getPrayerImageAlignment(prayer.id),
+              // Numéro de la prière
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: _colorWithAlpha(kDore, 0.15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        _colorWithAlpha(kNoir, 0.55),
-                        _colorWithAlpha(kNoir, 0.25),
-                        Colors.transparent,
-                      ],
+                child: Center(
+                  child: Text(
+                    '${prayer.id}',
+                    style: leagueSpartanStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: kDore,
                     ),
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
+              const SizedBox(width: 16),
+              // Titre et source
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: kDore,
-                        borderRadius: BorderRadius.circular(8),
+                    Text(
+                      prayer.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: isDarkMode
+                            ? Colors.white.withValues(alpha: 0.9)
+                            : kNoir,
+                        height: 1.3,
                       ),
-                      child: Text(
-                        '${prayer.id}',
-                        style: leagueSpartanStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: kBlanc,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (prayer.source != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        prayer.source!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: isDarkMode
+                              ? Colors.grey[500]
+                              : _colorWithAlpha(kNoir, 0.6),
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            prayer.title,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: kBlanc,
-                              fontWeight: FontWeight.w700,
-                              height: 1.2,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (prayer.source != null)
-                            Text(
-                              prayer.source!,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: _colorWithAlpha(kBlanc, 0.85),
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ],
                 ),
+              ),
+              const SizedBox(width: 12),
+              // Icône de navigation
+              Icon(
+                Icons.chevron_right,
+                color: isDarkMode
+                    ? Colors.grey[600]
+                    : _colorWithAlpha(kOutremer, 0.6),
+                size: 24,
               ),
             ],
           ),
@@ -577,7 +582,7 @@ class MeditationDetailPage extends ConsumerWidget {
           elevation: 0,
           centerTitle: true,
           iconTheme: IconThemeData(
-            color: isDarkMode ? kBlanc : kMarine,
+            color: kOutremer,
           ),
         ),
         body: ListView(
@@ -628,7 +633,7 @@ class MeditationDetailPage extends ConsumerWidget {
           meditation.title,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
+            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kOutremer,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
@@ -639,7 +644,7 @@ class MeditationDetailPage extends ConsumerWidget {
           style: theme.textTheme.titleMedium?.copyWith(
             color: isDarkMode
                 ? Colors.grey[400]
-                : _colorWithAlpha(kMarine, 0.7),
+                : _colorWithAlpha(kOutremer, 0.8),
             fontStyle: FontStyle.italic,
             height: 1.3,
           ),
@@ -883,7 +888,7 @@ class PrayerDetailPage extends ConsumerWidget {
           elevation: 0,
           centerTitle: true,
           iconTheme: IconThemeData(
-            color: isDarkMode ? kBlanc : kMarine,
+            color: kOutremer,
           ),
         ),
         body: ListView(
@@ -931,7 +936,7 @@ class PrayerDetailPage extends ConsumerWidget {
           prayer.title,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
+            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kOutremer,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
@@ -943,7 +948,7 @@ class PrayerDetailPage extends ConsumerWidget {
             style: theme.textTheme.titleMedium?.copyWith(
               color: isDarkMode
                   ? Colors.grey[400]
-                  : _colorWithAlpha(kMarine, 0.7),
+                  : _colorWithAlpha(kOutremer, 0.8),
               fontStyle: FontStyle.italic,
               height: 1.3,
             ),
@@ -986,44 +991,4 @@ class PrayerDetailPage extends ConsumerWidget {
 Color _colorWithAlpha(Color color, double opacity) {
   final clamped = opacity.clamp(0.0, 1.0);
   return color.withAlpha((clamped * 255).round());
-}
-
-String _getPrayerImagePath(int id) {
-  // Mapping explicite demandé par l’équipe
-  switch (id) {
-    case 1:
-      return 'assets/images/Papa_Leon_XIII.jpeg';
-    case 2:
-      return 'assets/images/Saint_Louis_Gonzague.jpg';
-    case 3:
-      return 'assets/images/Pape_Francois.jpg';
-    default:
-      // Fallback générique si de nouvelles prières arrivent sans image dédiée
-      switch (id % 5) {
-        case 1:
-          return 'assets/images/1.jpg';
-        case 2:
-          return 'assets/images/2.jpg';
-        case 3:
-          return 'assets/images/3.jpg';
-        case 4:
-          return 'assets/images/4.jpg';
-        default:
-          return 'assets/images/5.jpg';
-      }
-  }
-}
-
-Alignment _getPrayerImageAlignment(int id) {
-  // Ajuste le cadrage pour que le visage soit bien visible
-  switch (id) {
-    case 1: // Pape Léon XIII
-      return const Alignment(0, -0.6); // remonter vers le haut
-    case 2: // Saint Louis de Gonzague
-      return const Alignment(0, -0.5); // remonter légèrement
-    case 3: // Pape François
-      return const Alignment(0, -0.1); // quasi centre
-    default:
-      return Alignment.center;
-  }
 }

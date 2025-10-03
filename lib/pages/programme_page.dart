@@ -141,7 +141,7 @@ class _DayPicker extends StatelessWidget {
         backgroundColor: WidgetStateProperty.resolveWith<Color?>(
           (states) {
             if (states.contains(WidgetState.selected)) {
-              return isDarkMode ? const Color(0xFF2C2C2C) : kMarine;
+              return isDarkMode ? const Color(0xFF2C2C2C) : kOutremer;
             }
             return isDarkMode
                 ? Colors.grey[800]
@@ -153,7 +153,7 @@ class _DayPicker extends StatelessWidget {
             if (states.contains(WidgetState.selected)) {
               return isDarkMode ? Colors.white.withValues(alpha: 0.9) : kBlanc;
             }
-            return isDarkMode ? Colors.grey[400] : kMarine;
+            return kOutremer;
           },
         ),
         side: WidgetStateProperty.resolveWith<BorderSide?>(
@@ -236,7 +236,7 @@ class _AgendaEntry extends StatelessWidget {
 
     final timeStyle = theme.textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w700,
-      color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
+      color: isDarkMode ? const Color(0xFF81A3C1) : kOutremer,
     );
     final titleStyle = theme.textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w700,
@@ -261,9 +261,7 @@ class _AgendaEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border(
           left: BorderSide(
-            color: isDarkMode
-                ? kMarine.withValues(alpha: 0.4)
-                : kMarine,
+            color: isDarkMode ? kMarine.withValues(alpha: 0.4) : kMarine,
             width: 4,
           ),
         ),
@@ -314,6 +312,7 @@ class _AgendaEntry extends StatelessWidget {
       ),
     );
   }
+}
 }
 
 Color _colorWithAlpha(Color color, double opacity) {

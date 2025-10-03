@@ -111,7 +111,7 @@ class LocalNotificationService {
       priority: Priority.high,
       styleInformation: BigTextStyleInformation(bigText),
       category: AndroidNotificationCategory.reminder,
-      color: const Color(0xFF1692AD),
+      color: const Color(0xFFACBBE9), // kOutremer
       icon: '@mipmap/ic_launcher',
     );
     const ios = DarwinNotificationDetails(
@@ -199,7 +199,13 @@ class LocalNotificationService {
       }
 
       for (final e in day.entries) {
-        final parts = e.time.split(':');
+        // Gère le format "09:15/30" en prenant la première partie
+        String timeStr = e.time;
+        if (timeStr.contains('/')) {
+          timeStr = timeStr.split('/')[0]; // Prend "09:15" de "09:15/30"
+        }
+
+        final parts = timeStr.split(':');
         if (parts.length != 2) {
           _log('[LNS] skip entry: heure invalide ${e.time}');
           continue;
