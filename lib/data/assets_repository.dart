@@ -27,15 +27,11 @@ Future<List<Chant>> loadChants() async {
 Future<List<Meditation>> loadMeditations() async {
   final raw = await rootBundle.loadString(_meditationsAssetPath);
   final decoded = json.decode(raw) as List<dynamic>;
-  return decoded
-      .map((e) => Meditation.fromJson(e as Map<String, dynamic>))
-      .toList();
+  return decoded.map((e) => Meditation.fromJson(e as Map<String, dynamic>)).toList();
 }
 
 Future<List<Prayer>> loadPrayers() async {
   final raw = await rootBundle.loadString(_prayersAssetPath);
   final decoded = json.decode(raw) as List<dynamic>;
-  return decoded
-      .map((e) => Prayer.fromJson(e as Map<String, dynamic>))
-      .toList();
+  return decoded.map((e) => Prayer.fromJson(e as Map<String, dynamic>)).toList();
 }

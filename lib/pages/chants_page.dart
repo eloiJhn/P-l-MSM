@@ -15,12 +15,45 @@ class ChantsPage extends ConsumerStatefulWidget {
 
 class _ChantsPageState extends ConsumerState<ChantsPage> {
   late final TextEditingController _controller;
+  bool _imagesPreloaded = false;
 
   @override
   void initState() {
     super.initState();
     final initial = ref.read(chantsQueryProvider);
     _controller = TextEditingController(text: initial);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_imagesPreloaded) {
+      _preloadAllImages();
+      _imagesPreloaded = true;
+    }
+  }
+
+  Future<void> _preloadAllImages() async {
+    final asyncChants = ref.read(chantsProvider);
+    asyncChants.whenData((chants) {
+      for (final chant in chants) {
+        final imagePath = _getImagePath(chant.id);
+        precacheImage(AssetImage(imagePath), context);
+      }
+    });
+  }
+
+  String _getImagePath(int id) {
+    switch (id) {
+      case 8:
+        return 'assets/images/8jpg.jpg';
+      case 11:
+        return 'assets/images/11.jpeg';
+      case 13:
+        return 'assets/images/13.jpeg';
+      default:
+        return 'assets/images/$id.jpg';
+    }
   }
 
   @override
@@ -34,6 +67,7 @@ class _ChantsPageState extends ConsumerState<ChantsPage> {
     final asyncChants = ref.watch(chantsProvider);
     final query = ref.watch(chantsQueryProvider);
     final showOnlyFavorites = ref.watch(showOnlyFavoritesProvider);
+    final isDarkMode = ref.watch(themeProvider);
 
     return asyncChants.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -46,7 +80,6 @@ class _ChantsPageState extends ConsumerState<ChantsPage> {
       data: (chants) {
         final sorted = [...chants]..sort((a, b) => a.id.compareTo(b.id));
         final filtered = _filterChants(sorted, query, showOnlyFavorites);
-        final theme = Theme.of(context);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,6 +95,7 @@ class _ChantsPageState extends ConsumerState<ChantsPage> {
                     query: query,
                     onChanged: (value) =>
                         ref.read(chantsQueryProvider.notifier).state = value,
+                    isDarkMode: isDarkMode,
                   ),
                   const SizedBox(height: 16),
                   _FavoritesFilter(
@@ -69,9 +103,13 @@ class _ChantsPageState extends ConsumerState<ChantsPage> {
                     onChanged: (value) => ref
                         .read(showOnlyFavoritesProvider.notifier)
                         .state = value,
+                    isDarkMode: isDarkMode,
                   ),
                   const SizedBox(height: 12),
-                  _ResultBadge(count: filtered.length),
+                  _ResultBadge(
+                    count: filtered.length,
+                    isDarkMode: isDarkMode,
+                  ),
                 ],
               ),
             ),
@@ -140,11 +178,13 @@ class _ChantSearchField extends StatelessWidget {
     required this.controller,
     required this.query,
     required this.onChanged,
+    required this.isDarkMode,
   });
 
   final TextEditingController controller;
   final String query;
   final ValueChanged<String> onChanged;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -152,13 +192,24 @@ class _ChantSearchField extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: onChanged,
-      style: theme.textTheme.bodyMedium,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : null,
+      ),
       decoration: InputDecoration(
         hintText: 'Numéro ou titre du chant',
-        prefixIcon: const Icon(Icons.search),
+        hintStyle: TextStyle(
+          color: isDarkMode ? Colors.grey[500] : null,
+        ),
+        prefixIcon: Icon(
+          Icons.search,
+          color: isDarkMode ? Colors.grey[400] : null,
+        ),
         suffixIcon: query.isNotEmpty
             ? IconButton(
-                icon: const Icon(Icons.clear),
+                icon: Icon(
+                  Icons.clear,
+                  color: isDarkMode ? Colors.grey[400] : null,
+                ),
                 onPressed: () {
                   controller.clear();
                   onChanged('');
@@ -166,18 +217,29 @@ class _ChantSearchField extends StatelessWidget {
               )
             : null,
         filled: true,
-        fillColor: _colorWithAlpha(kOutremer, 0.18),
+        fillColor: isDarkMode
+            ? const Color(0xFF2C2C2C)
+            : _colorWithAlpha(kOutremer, 0.18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: _colorWithAlpha(kMarine, 0.25)),
+          borderSide: BorderSide(
+            color:
+                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarine, 0.25),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide(color: _colorWithAlpha(kMarine, 0.2)),
+          borderSide: BorderSide(
+            color:
+                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarine, 0.2),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: kMarine, width: 1.4),
+          borderSide: BorderSide(
+            color: isDarkMode ? kMarine.withValues(alpha: 0.6) : kMarine,
+            width: 1.4,
+          ),
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 14),
       ),
@@ -186,9 +248,13 @@ class _ChantSearchField extends StatelessWidget {
 }
 
 class _ResultBadge extends StatelessWidget {
-  const _ResultBadge({required this.count});
+  const _ResultBadge({
+    required this.count,
+    required this.isDarkMode,
+  });
 
   final int count;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -198,17 +264,26 @@ class _ResultBadge extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: _colorWithAlpha(kMarine, 0.1),
+            color: isDarkMode
+                ? const Color(0xFF2C2C2C)
+                : _colorWithAlpha(kMarine, 0.1),
             borderRadius: BorderRadius.circular(12),
+            border: isDarkMode
+                ? Border.all(color: Colors.grey[700]!, width: 1)
+                : null,
           ),
           child: Row(
             children: [
-              const Icon(Icons.library_music, size: 16, color: kMarine),
+              Icon(
+                Icons.library_music,
+                size: 16,
+                color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
+              ),
               const SizedBox(width: 6),
               Text(
                 '$count résultat${count > 1 ? 's' : ''}',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: kMarine,
+                  color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -224,10 +299,12 @@ class _FavoritesFilter extends StatelessWidget {
   const _FavoritesFilter({
     required this.showOnlyFavorites,
     required this.onChanged,
+    required this.isDarkMode,
   });
 
   final bool showOnlyFavorites;
   final ValueChanged<bool> onChanged;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -286,19 +363,30 @@ class _FavoritesFilter extends StatelessWidget {
             },
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-                (states) => states.contains(WidgetState.selected)
-                    ? kMarine
-                    : _colorWithAlpha(kOutremer, 0.25),
+                (states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return isDarkMode ? const Color(0xFF2C2C2C) : kMarine;
+                  }
+                  return isDarkMode
+                      ? Colors.grey[800]
+                      : _colorWithAlpha(kOutremer, 0.25);
+                },
               ),
               foregroundColor: WidgetStateProperty.resolveWith<Color?>(
-                (states) =>
-                    states.contains(WidgetState.selected) ? kBlanc : kMarine,
+                (states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return isDarkMode ? Colors.white.withValues(alpha: 0.9) : kBlanc;
+                  }
+                  return isDarkMode ? Colors.grey[400] : kMarine;
+                },
               ),
               side: WidgetStateProperty.resolveWith<BorderSide?>(
                 (states) => BorderSide(
                   color: states.contains(WidgetState.selected)
-                      ? kMarine
-                      : _colorWithAlpha(kMarine, 0.3),
+                      ? (isDarkMode ? Colors.grey[700]! : kMarine)
+                      : (isDarkMode
+                          ? Colors.grey[700]!
+                          : _colorWithAlpha(kMarine, 0.3)),
                 ),
               ),
               shape: WidgetStateProperty.all(
@@ -463,6 +551,8 @@ class _ChantGridCard extends ConsumerWidget {
       return Image.asset(
         getImagePath(chantId),
         fit: BoxFit.cover,
+        cacheWidth: 800,
+        gaplessPlayback: true,
         errorBuilder: (context, error, stackTrace) {
           // Image de fallback avec gradient si l'image n'existe pas
           return Container(
@@ -507,6 +597,10 @@ class ChantDetailPage extends ConsumerWidget {
     final theme = Theme.of(context);
     final favAsync = ref.watch(isFavoriteProvider(chant.id));
     final isFav = favAsync.value ?? false;
+    final isDarkMode = ref.watch(themeProvider);
+
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
+    final appBarColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -516,16 +610,19 @@ class ChantDetailPage extends ConsumerWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: kBlanc,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: kBlanc,
+          backgroundColor: appBarColor,
           elevation: 0,
           centerTitle: true,
+          iconTheme: IconThemeData(
+            color: isDarkMode ? kBlanc : kMarine,
+          ),
           title: Text(
             'Chant ${chant.id.toString().padLeft(2, '0')}',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: kMarine,
+              color: isDarkMode ? kBlanc : kMarine,
             ),
           ),
           actions: [
@@ -533,7 +630,7 @@ class ChantDetailPage extends ConsumerWidget {
               tooltip: isFav ? 'Retirer des favoris' : 'Ajouter aux favoris',
               icon: Icon(
                 isFav ? Icons.favorite : Icons.favorite_border,
-                color: isFav ? kDore : kMarine,
+                color: isFav ? kDore : (isDarkMode ? kBlanc : kMarine),
               ),
               onPressed: () => toggleFavorite(chant.id),
             ),
@@ -548,7 +645,7 @@ class ChantDetailPage extends ConsumerWidget {
                 chant.title,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: kMarine,
+                  color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
                   height: 1.2,
                 ),
                 textAlign: TextAlign.center,
@@ -557,29 +654,29 @@ class ChantDetailPage extends ConsumerWidget {
             const SizedBox(height: 40),
 
             // Organisation: Refrain puis alternance couplet-refrain
-            ..._buildChantContent(),
+            ..._buildChantContent(isDarkMode),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildChantContent() {
+  List<Widget> _buildChantContent(bool isDarkMode) {
     final widgets = <Widget>[];
 
     // Si on a refrain et couplets, on fait l'alternance
     if (chant.refrain.isNotEmpty && chant.verses.isNotEmpty) {
       // D'abord le refrain
-      widgets.add(_buildRefrainText());
+      widgets.add(_buildRefrainText(isDarkMode));
       widgets.add(const SizedBox(height: 32));
 
       // Puis alternance couplet-refrain
       for (int i = 0; i < chant.verses.length; i++) {
-        widgets.add(_buildVerseText(i + 1, chant.verses[i]));
+        widgets.add(_buildVerseText(i + 1, chant.verses[i], isDarkMode));
         widgets.add(const SizedBox(height: 24));
 
         // Refrain après chaque couplet
-        widgets.add(_buildRefrainText());
+        widgets.add(_buildRefrainText(isDarkMode));
         if (i < chant.verses.length - 1) {
           widgets.add(const SizedBox(height: 32));
         }
@@ -587,12 +684,12 @@ class ChantDetailPage extends ConsumerWidget {
     }
     // Si on a seulement le refrain
     else if (chant.refrain.isNotEmpty) {
-      widgets.add(_buildRefrainText());
+      widgets.add(_buildRefrainText(isDarkMode));
     }
     // Si on a seulement les couplets
     else if (chant.verses.isNotEmpty) {
       for (int i = 0; i < chant.verses.length; i++) {
-        widgets.add(_buildVerseText(i + 1, chant.verses[i]));
+        widgets.add(_buildVerseText(i + 1, chant.verses[i], isDarkMode));
         if (i < chant.verses.length - 1) {
           widgets.add(const SizedBox(height: 24));
         }
@@ -600,13 +697,13 @@ class ChantDetailPage extends ConsumerWidget {
     }
     // Si on n'a rien
     else {
-      widgets.add(_buildEmptyText());
+      widgets.add(_buildEmptyText(isDarkMode));
     }
 
     return widgets;
   }
 
-  Widget _buildRefrainText() {
+  Widget _buildRefrainText(bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -620,12 +717,12 @@ class ChantDetailPage extends ConsumerWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        ...chant.refrain.map((line) => _buildLyricLine(line)),
+        ...chant.refrain.map((line) => _buildLyricLine(line, isDarkMode)),
       ],
     );
   }
 
-  Widget _buildVerseText(int number, String verse) {
+  Widget _buildVerseText(int number, String verse, bool isDarkMode) {
     final lines = verse.split('\n');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -635,17 +732,17 @@ class ChantDetailPage extends ConsumerWidget {
           style: leagueSpartanStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: kMarine,
+            color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        ...lines.map((line) => _buildLyricLine(line)),
+        ...lines.map((line) => _buildLyricLine(line, isDarkMode)),
       ],
     );
   }
 
-  Widget _buildLyricLine(String line) {
+  Widget _buildLyricLine(String line, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Text(
@@ -653,21 +750,23 @@ class ChantDetailPage extends ConsumerWidget {
         style: TextStyle(
           fontSize: 16,
           height: 1.5,
-          color: _colorWithAlpha(kNoir, 0.85),
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.85)
+              : _colorWithAlpha(kNoir, 0.85),
         ),
         textAlign: TextAlign.center,
       ),
     );
   }
 
-  Widget _buildEmptyText() {
+  Widget _buildEmptyText(bool isDarkMode) {
     return Center(
       child: Text(
         'Paroles à venir',
         style: TextStyle(
           fontSize: 16,
           fontStyle: FontStyle.italic,
-          color: _colorWithAlpha(kMarine, 0.6),
+          color: isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.6),
         ),
         textAlign: TextAlign.center,
       ),

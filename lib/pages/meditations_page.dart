@@ -12,6 +12,7 @@ class MeditationsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncMeditations = ref.watch(meditationsProvider);
+    final isDarkMode = ref.watch(themeProvider);
 
     return asyncMeditations.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -32,7 +33,7 @@ class MeditationsPage extends ConsumerWidget {
                 children: [
                   // Supprime l'espace inutile en haut
                   // const SizedBox(height: 1),
-                  _PageHeader(),
+                  _PageHeader(isDarkMode: isDarkMode),
                   // const SizedBox(height: 1),
                   // _ResultBadge(count: meditations.length),
                 ],
@@ -52,6 +53,7 @@ class MeditationsPage extends ConsumerWidget {
                         iconColor: kDore,
                         title: 'Méditations',
                         subtitle: 'pour la traversée de la baie',
+                        isDarkMode: isDarkMode,
                       ),
                       const SizedBox(height: 12),
                       ...List.generate(meditations.length, (index) {
@@ -73,12 +75,13 @@ class MeditationsPage extends ConsumerWidget {
                         );
                       }),
                     ] else ...[
-                      const _SectionTitle(
+                      _SectionTitle(
                         icon: Icons.volunteer_activism,
-                        backgroundColor: Color(0x3381A3C1),
+                        backgroundColor: const Color(0x3381A3C1),
                         iconColor: kOutremer,
                         title: 'Prières',
                         subtitle: 'auprès de saint Michel',
+                        isDarkMode: isDarkMode,
                       ),
                       const SizedBox(height: 12),
                       prayersAsync.when(
@@ -128,7 +131,10 @@ class MeditationsPage extends ConsumerWidget {
 final _showPrayersProvider = StateProvider<bool>((ref) => false);
 
 class _MedPraySwitch extends ConsumerWidget {
-  const _MedPraySwitch({super.key});
+  const _MedPraySwitch({required this.isDarkMode});
+
+  final bool isDarkMode;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showPrayers = ref.watch(_showPrayersProvider);
@@ -145,8 +151,8 @@ class _MedPraySwitch extends ConsumerWidget {
               selected: !showPrayers,
               icon: Icons.menu_book,
               label: 'Méditations',
-              onTap: () =>
-                  ref.read(_showPrayersProvider.notifier).state = false,
+              onTap: () => ref.read(_showPrayersProvider.notifier).state = false,
+              isDarkMode: isDarkMode,
             ),
           ),
           Expanded(
@@ -155,6 +161,7 @@ class _MedPraySwitch extends ConsumerWidget {
               icon: Icons.volunteer_activism,
               label: 'Prières',
               onTap: () => ref.read(_showPrayersProvider.notifier).state = true,
+              isDarkMode: isDarkMode,
             ),
           ),
         ],
@@ -169,11 +176,13 @@ class _SegmentButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
+    required this.isDarkMode,
   });
   final bool selected;
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -190,16 +199,22 @@ class _SegmentButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon,
-                size: 18,
-                color: selected ? kMarine : _colorWithAlpha(kMarine, 0.6)),
+            Icon(
+              icon,
+              size: 18,
+              color: selected
+                  ? (isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine)
+                  : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.6)),
+            ),
             const SizedBox(width: 8),
             Text(
               label,
               style: leagueSpartanStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: selected ? kMarine : _colorWithAlpha(kMarine, 0.7),
+                color: selected
+                    ? (isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine)
+                    : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.7)),
               ),
             ),
           ],
@@ -210,13 +225,16 @@ class _SegmentButton extends StatelessWidget {
 }
 
 class _PageHeader extends ConsumerWidget {
+  const _PageHeader({required this.isDarkMode});
+
+  final bool isDarkMode;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _MedPraySwitch(),
+        _MedPraySwitch(isDarkMode: isDarkMode),
         Row(
           children: [
             Container(
@@ -243,6 +261,7 @@ class _SectionTitle extends StatelessWidget {
     required this.iconColor,
     required this.title,
     this.subtitle,
+    required this.isDarkMode,
   });
 
   final IconData icon;
@@ -250,6 +269,7 @@ class _SectionTitle extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String? subtitle;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +280,9 @@ class _SectionTitle extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: isDarkMode
+                ? backgroundColor.withValues(alpha: 0.3)
+                : backgroundColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: iconColor, size: 22),
@@ -274,44 +296,20 @@ class _SectionTitle extends StatelessWidget {
                 title,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: kMarine,
+                  color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
                 ),
               ),
               if (subtitle != null)
                 Text(
                   subtitle!,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: _colorWithAlpha(kMarine, 0.7),
+                    color: isDarkMode
+                        ? Colors.grey[400]
+                        : _colorWithAlpha(kMarine, 0.7),
                     fontStyle: FontStyle.italic,
                   ),
                 ),
             ],
-          ),
-        )
-      ],
-    );
-  }
-}
-
-class _PrayersHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: _colorWithAlpha(kOutremer, 0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(Icons.volunteer_activism, color: kOutremer, size: 22),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
           ),
         )
       ],
@@ -338,8 +336,7 @@ class _PrayerCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border:
-                Border.all(color: _colorWithAlpha(kOutremer, 0.12), width: 1),
+            border: Border.all(color: _colorWithAlpha(kOutremer, 0.12), width: 1),
             boxShadow: [
               BoxShadow(
                 color: _colorWithAlpha(kMarine, 0.06),
@@ -375,10 +372,10 @@ class _PrayerCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: kDore,
                         borderRadius: BorderRadius.circular(8),
@@ -404,6 +401,8 @@ class _PrayerCard extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                               height: 1.2,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           if (prayer.source != null)
                             Text(
@@ -428,21 +427,6 @@ class _PrayerCard extends StatelessWidget {
 }
 
 // --- CLASSES ET FONCTIONS UTILITAIRES AU NIVEAU SUPERIEUR ---
-
-class _ResultBadge extends StatelessWidget {
-  const _ResultBadge({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Text('$count'), // À adapter selon le design souhaité
-    );
-  }
-}
 
 class _MeditationCard extends StatelessWidget {
   const _MeditationCard({
@@ -510,8 +494,7 @@ class _MeditationCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: kDore,
                             borderRadius: BorderRadius.circular(8),
@@ -567,14 +550,18 @@ String _getMeditationImagePath(int meditationId) {
   }
 }
 
-class MeditationDetailPage extends StatelessWidget {
+class MeditationDetailPage extends ConsumerWidget {
   const MeditationDetailPage({super.key, required this.meditation});
 
   final Meditation meditation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDarkMode = ref.watch(themeProvider);
+
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
+    final appBarColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
 
     return GestureDetector(
       onHorizontalDragEnd: (details) {
@@ -584,35 +571,40 @@ class MeditationDetailPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: kBlanc,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: kBlanc,
+          backgroundColor: appBarColor,
           elevation: 0,
           centerTitle: true,
+          iconTheme: IconThemeData(
+            color: isDarkMode ? kBlanc : kMarine,
+          ),
         ),
         body: ListView(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
           children: [
             // En-tête avec titre et sous-titre
-            _buildHeader(theme),
+            _buildHeader(theme, isDarkMode),
             const SizedBox(height: 32),
 
             // Sections de la méditation
-            ..._buildSections(theme),
+            ..._buildSections(theme, isDarkMode),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(ThemeData theme, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: _colorWithAlpha(kDore, 0.15),
+            color: isDarkMode
+                ? _colorWithAlpha(kDore, 0.25)
+                : _colorWithAlpha(kDore, 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -636,7 +628,7 @@ class MeditationDetailPage extends StatelessWidget {
           meditation.title,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: kMarine,
+            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
@@ -645,7 +637,9 @@ class MeditationDetailPage extends StatelessWidget {
         Text(
           meditation.subtitle,
           style: theme.textTheme.titleMedium?.copyWith(
-            color: _colorWithAlpha(kMarine, 0.7),
+            color: isDarkMode
+                ? Colors.grey[400]
+                : _colorWithAlpha(kMarine, 0.7),
             fontStyle: FontStyle.italic,
             height: 1.3,
           ),
@@ -655,17 +649,17 @@ class MeditationDetailPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildSections(ThemeData theme) {
+  List<Widget> _buildSections(ThemeData theme, bool isDarkMode) {
     final widgets = <Widget>[];
 
     for (int i = 0; i < meditation.sections.length; i++) {
       final section = meditation.sections[i];
 
-      widgets.add(_buildSection(section, theme));
+      widgets.add(_buildSection(section, theme, isDarkMode));
 
       if (i < meditation.sections.length - 1) {
         widgets.add(const SizedBox(height: 24));
-        widgets.add(_buildDivider());
+        widgets.add(_buildDivider(isDarkMode));
         widgets.add(const SizedBox(height: 24));
       }
     }
@@ -673,7 +667,7 @@ class MeditationDetailPage extends StatelessWidget {
     return widgets;
   }
 
-  Widget _buildSection(MeditationSection section, ThemeData theme) {
+  Widget _buildSection(MeditationSection section, ThemeData theme, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -681,10 +675,14 @@ class MeditationDetailPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: _colorWithAlpha(kOutremer, 0.05),
+            color: isDarkMode
+                ? const Color(0xFF2C2C2C)
+                : _colorWithAlpha(kOutremer, 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: _colorWithAlpha(kOutremer, 0.1),
+              color: isDarkMode
+                  ? Colors.grey[700]!
+                  : _colorWithAlpha(kOutremer, 0.1),
               width: 1,
             ),
           ),
@@ -692,7 +690,9 @@ class MeditationDetailPage extends StatelessWidget {
             section.text,
             style: theme.textTheme.bodyLarge?.copyWith(
               height: 1.6,
-              color: _colorWithAlpha(kNoir, 0.85),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.85)
+                  : _colorWithAlpha(kNoir, 0.85),
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -701,28 +701,32 @@ class MeditationDetailPage extends StatelessWidget {
         // Points de réflexion
         if (section.bullets.isNotEmpty) ...[
           const SizedBox(height: 16),
-          ...section.bullets.map((bullet) => _buildBulletPoint(bullet, theme)),
+          ...section.bullets.map((bullet) => _buildBulletPoint(bullet, theme, isDarkMode)),
         ],
 
         // Prière
         if (section.prayer != null) ...[
           const SizedBox(height: 20),
-          _buildPrayer(section.prayer!, theme),
+          _buildPrayer(section.prayer!, theme, isDarkMode),
         ],
       ],
     );
   }
 
-  Widget _buildBulletPoint(String bullet, ThemeData theme) {
+  Widget _buildBulletPoint(String bullet, ThemeData theme, bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: _colorWithAlpha(kMarine, 0.04),
+          color: isDarkMode
+              ? const Color(0xFF1E1E1E)
+              : _colorWithAlpha(kMarine, 0.04),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _colorWithAlpha(kMarine, 0.08),
+            color: isDarkMode
+                ? Colors.grey[800]!
+                : _colorWithAlpha(kMarine, 0.08),
             width: 1,
           ),
         ),
@@ -744,7 +748,9 @@ class MeditationDetailPage extends StatelessWidget {
                 bullet,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   height: 1.5,
-                  color: _colorWithAlpha(kNoir, 0.8),
+                  color: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.8)
+                      : _colorWithAlpha(kNoir, 0.8),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -755,21 +761,26 @@ class MeditationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPrayer(String prayer, ThemeData theme) {
+  Widget _buildPrayer(String prayer, ThemeData theme, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            _colorWithAlpha(kDore, 0.1),
-            _colorWithAlpha(kDore, 0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: isDarkMode
+            ? null
+            : LinearGradient(
+                colors: [
+                  _colorWithAlpha(kDore, 0.1),
+                  _colorWithAlpha(kDore, 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+        color: isDarkMode ? const Color(0xFF2C2C2C) : null,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _colorWithAlpha(kDore, 0.2),
+          color: isDarkMode
+              ? _colorWithAlpha(kDore, 0.4)
+              : _colorWithAlpha(kDore, 0.2),
           width: 1,
         ),
       ),
@@ -799,7 +810,9 @@ class MeditationDetailPage extends StatelessWidget {
             prayer,
             style: theme.textTheme.bodyMedium?.copyWith(
               height: 1.5,
-              color: _colorWithAlpha(kNoir, 0.85),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.85)
+                  : _colorWithAlpha(kNoir, 0.85),
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w500,
             ),
@@ -809,12 +822,17 @@ class MeditationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(bool isDarkMode) {
     return Row(
       children: [
         Expanded(
-            child:
-                Container(height: 1, color: _colorWithAlpha(kOutremer, 0.2))),
+          child: Container(
+            height: 1,
+            color: isDarkMode
+                ? Colors.grey[800]
+                : _colorWithAlpha(kOutremer, 0.2),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
@@ -827,21 +845,31 @@ class MeditationDetailPage extends StatelessWidget {
           ),
         ),
         Expanded(
-            child:
-                Container(height: 1, color: _colorWithAlpha(kOutremer, 0.2))),
+          child: Container(
+            height: 1,
+            color: isDarkMode
+                ? Colors.grey[800]
+                : _colorWithAlpha(kOutremer, 0.2),
+          ),
+        ),
       ],
     );
   }
 }
 
-class PrayerDetailPage extends StatelessWidget {
+class PrayerDetailPage extends ConsumerWidget {
   const PrayerDetailPage({super.key, required this.prayer});
 
   final Prayer prayer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDarkMode = ref.watch(themeProvider);
+
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
+    final appBarColor = isDarkMode ? const Color(0xFF121212) : kBlanc;
+
     return GestureDetector(
       onHorizontalDragEnd: (details) {
         if (details.primaryVelocity! > 0) {
@@ -849,32 +877,37 @@ class PrayerDetailPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: kBlanc,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
-          backgroundColor: kBlanc,
+          backgroundColor: appBarColor,
           elevation: 0,
           centerTitle: true,
+          iconTheme: IconThemeData(
+            color: isDarkMode ? kBlanc : kMarine,
+          ),
         ),
         body: ListView(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
           children: [
-            _buildHeader(theme),
+            _buildHeader(theme, isDarkMode),
             const SizedBox(height: 24),
-            _buildPrayerBody(theme),
+            _buildPrayerBody(theme, isDarkMode),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(ThemeData theme, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: _colorWithAlpha(kDore, 0.15),
+            color: isDarkMode
+                ? _colorWithAlpha(kDore, 0.25)
+                : _colorWithAlpha(kDore, 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -898,7 +931,7 @@ class PrayerDetailPage extends StatelessWidget {
           prayer.title,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: kMarine,
+            color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : kMarine,
             height: 1.2,
           ),
           textAlign: TextAlign.center,
@@ -908,7 +941,9 @@ class PrayerDetailPage extends StatelessWidget {
           Text(
             prayer.source!,
             style: theme.textTheme.titleMedium?.copyWith(
-              color: _colorWithAlpha(kMarine, 0.7),
+              color: isDarkMode
+                  ? Colors.grey[400]
+                  : _colorWithAlpha(kMarine, 0.7),
               fontStyle: FontStyle.italic,
               height: 1.3,
             ),
@@ -919,19 +954,28 @@ class PrayerDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPrayerBody(ThemeData theme) {
+  Widget _buildPrayerBody(ThemeData theme, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _colorWithAlpha(kOutremer, 0.05),
+        color: isDarkMode
+            ? const Color(0xFF2C2C2C)
+            : _colorWithAlpha(kOutremer, 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _colorWithAlpha(kOutremer, 0.12), width: 1),
+        border: Border.all(
+          color: isDarkMode
+              ? Colors.grey[700]!
+              : _colorWithAlpha(kOutremer, 0.12),
+          width: 1,
+        ),
       ),
       child: Text(
         prayer.text,
         style: theme.textTheme.bodyLarge?.copyWith(
           height: 1.5,
-          color: _colorWithAlpha(kNoir, 0.85),
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.85)
+              : _colorWithAlpha(kNoir, 0.85),
           fontWeight: FontWeight.w500,
         ),
       ),

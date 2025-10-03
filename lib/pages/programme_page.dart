@@ -31,7 +31,7 @@ class ProgrammePage extends ConsumerWidget {
   }
 }
 
-class _ProgrammeAgenda extends StatelessWidget {
+class _ProgrammeAgenda extends ConsumerWidget {
   const _ProgrammeAgenda({
     required this.days,
     required this.selectedIndex,
@@ -43,14 +43,14 @@ class _ProgrammeAgenda extends StatelessWidget {
   final ValueChanged<int> onDaySelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (days.isEmpty) {
       return const Center(child: Text('Programme à venir'));
     }
 
     final safeIndex = selectedIndex.clamp(0, days.length - 1);
     final selectedDay = days[safeIndex];
-    final theme = Theme.of(context);
+    final isDarkMode = ref.watch(themeProvider);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
@@ -60,13 +60,27 @@ class _ProgrammeAgenda extends StatelessWidget {
           days: days,
           selectedIndex: safeIndex,
           onDaySelected: onDaySelected,
+          isDarkMode: isDarkMode,
         ),
         const SizedBox(height: 24),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 280),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
-          child: _AgendaCard(key: ValueKey(selectedDay.date), day: selectedDay),
+          layoutBuilder: (currentChild, previousChildren) {
+            return Stack(
+              alignment: Alignment.topCenter,
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
+          child: _AgendaCard(
+            key: ValueKey(selectedDay.date),
+            day: selectedDay,
+            isDarkMode: isDarkMode,
+          ),
         ),
       ],
     );
@@ -78,11 +92,13 @@ class _DayPicker extends StatelessWidget {
     required this.days,
     required this.selectedIndex,
     required this.onDaySelected,
+    required this.isDarkMode,
   });
 
   final List<ProgrammeDay> days;
   final int selectedIndex;
   final ValueChanged<int> onDaySelected;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -123,18 +139,30 @@ class _DayPicker extends StatelessWidget {
       },
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-          (states) => states.contains(WidgetState.selected)
-              ? kMarine
-              : _colorWithOpacity(kOutremer, 0.35),
+          (states) {
+            if (states.contains(WidgetState.selected)) {
+              return isDarkMode ? const Color(0xFF2C2C2C) : kMarine;
+            }
+            return isDarkMode
+                ? Colors.grey[800]
+                : _colorWithAlpha(kOutremer, 0.35);
+          },
         ),
         foregroundColor: WidgetStateProperty.resolveWith<Color?>(
-          (states) => states.contains(WidgetState.selected) ? kBlanc : kMarine,
+          (states) {
+            if (states.contains(WidgetState.selected)) {
+              return isDarkMode ? Colors.white.withValues(alpha: 0.9) : kBlanc;
+            }
+            return isDarkMode ? Colors.grey[400] : kMarine;
+          },
         ),
         side: WidgetStateProperty.resolveWith<BorderSide?>(
           (states) => BorderSide(
             color: states.contains(WidgetState.selected)
-                ? kMarine
-                : _colorWithOpacity(kMarine, 0.3),
+                ? (isDarkMode ? Colors.grey[700]! : kMarine)
+                : (isDarkMode
+                    ? Colors.grey[700]!
+                    : _colorWithAlpha(kMarine, 0.3)),
           ),
         ),
         shape: WidgetStateProperty.all(
@@ -155,15 +183,22 @@ class _DayPicker extends StatelessWidget {
 }
 
 class _AgendaCard extends StatelessWidget {
-  const _AgendaCard({super.key, required this.day});
+  const _AgendaCard({
+    super.key,
+    required this.day,
+    required this.isDarkMode,
+  });
 
   final ProgrammeDay day;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _colorWithOpacity(kOutremer, 0.25),
+        color: isDarkMode
+            ? const Color(0xFF1E1E1E)
+            : _colorWithAlpha(kOutremer, 0.25),
         borderRadius: BorderRadius.circular(28),
       ),
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
@@ -175,6 +210,7 @@ class _AgendaCard extends StatelessWidget {
             (index) => _AgendaEntry(
               entry: day.entries[index],
               isLast: index == day.entries.length - 1,
+              isDarkMode: isDarkMode,
             ),
           ),
         ],
@@ -184,10 +220,15 @@ class _AgendaCard extends StatelessWidget {
 }
 
 class _AgendaEntry extends StatelessWidget {
-  const _AgendaEntry({required this.entry, required this.isLast});
+  const _AgendaEntry({
+    required this.entry,
+    required this.isLast,
+    required this.isDarkMode,
+  });
 
   final ProgrammeEntry entry;
   final bool isLast;
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -195,28 +236,42 @@ class _AgendaEntry extends StatelessWidget {
 
     final timeStyle = theme.textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w700,
-      color: kMarine,
+      color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
     );
     final titleStyle = theme.textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w700,
+      color: isDarkMode ? Colors.white.withValues(alpha: 0.9) : null,
     );
     final subtitleStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: _colorWithOpacity(theme.colorScheme.onSurface, .7),
+      color: isDarkMode
+          ? Colors.grey[400]
+          : _colorWithAlpha(theme.colorScheme.onSurface, .7),
     );
     final noteStyle = theme.textTheme.bodySmall?.copyWith(
-      color: _colorWithOpacity(theme.colorScheme.onSurface, .6),
+      color: isDarkMode
+          ? Colors.grey[500]
+          : _colorWithAlpha(theme.colorScheme.onSurface, .6),
       fontStyle: FontStyle.italic,
     );
 
     return Container(
       margin: EdgeInsets.only(bottom: isLast ? 0 : 16),
       decoration: BoxDecoration(
-        color: kBlanc,
+        color: isDarkMode ? const Color(0xFF2C2C2C) : kBlanc,
         borderRadius: BorderRadius.circular(20),
-        border: Border(left: BorderSide(color: kMarine, width: 4)),
+        border: Border(
+          left: BorderSide(
+            color: isDarkMode
+                ? kMarine.withValues(alpha: 0.4)
+                : kMarine,
+            width: 4,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: _colorWithOpacity(kMarine, 0.08),
+            color: isDarkMode
+                ? Colors.black.withValues(alpha: 0.3)
+                : _colorWithAlpha(kMarine, 0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -261,7 +316,7 @@ class _AgendaEntry extends StatelessWidget {
   }
 }
 
-Color _colorWithOpacity(Color color, double opacity) {
+Color _colorWithAlpha(Color color, double opacity) {
   final clamped = opacity.clamp(0.0, 1.0);
   return color.withAlpha((clamped * 255).round());
 }

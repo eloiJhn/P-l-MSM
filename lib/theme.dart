@@ -26,20 +26,22 @@ TextStyle leagueSpartanStyle({
   );
 }
 
-ThemeData buildAppTheme() {
-  final baseTextTheme = GoogleFonts.leagueSpartanTextTheme();
+ThemeData buildAppTheme({bool isDark = false}) {
+  final baseTextTheme = GoogleFonts.leagueSpartanTextTheme(
+    isDark ? ThemeData.dark().textTheme : ThemeData.light().textTheme,
+  );
 
   final colorScheme = ColorScheme.fromSeed(
     seedColor: kMarine,
     primary: kMarine,
     onPrimary: kBlanc,
-    brightness: Brightness.light,
+    brightness: isDark ? Brightness.dark : Brightness.light,
   );
 
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-    scaffoldBackgroundColor: kBlanc,
+    scaffoldBackgroundColor: isDark ? const Color(0xFF121212) : kBlanc,
     textTheme: baseTextTheme,
     appBarTheme: AppBarTheme(
       backgroundColor: kMarine,

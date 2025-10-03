@@ -4,16 +4,36 @@ import 'package:hive/hive.dart';
 import 'data/assets_repository.dart';
 import 'data/models.dart';
 
+// Thème sombre/clair
+final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) {
+  return ThemeNotifier();
+});
+
+class ThemeNotifier extends StateNotifier<bool> {
+  ThemeNotifier() : super(false) {
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final box = Hive.box('prefs');
+    state = box.get('isDarkMode', defaultValue: false) as bool;
+  }
+
+  Future<void> toggleTheme() async {
+    state = !state;
+    final box = Hive.box('prefs');
+    await box.put('isDarkMode', state);
+  }
+}
+
 // Lecture des contenus (assets)
-final programmeProvider =
-    FutureProvider<List<ProgrammeDay>>((ref) => loadProgramme());
+final programmeProvider = FutureProvider<List<ProgrammeDay>>((ref) => loadProgramme());
 
 final programmeSelectedDayIndexProvider = StateProvider<int>((ref) => 0);
 
 final chantsProvider = FutureProvider<List<Chant>>((ref) => loadChants());
 
-final meditationsProvider =
-    FutureProvider<List<Meditation>>((ref) => loadMeditations());
+final meditationsProvider = FutureProvider<List<Meditation>>((ref) => loadMeditations());
 
 final prayersProvider = FutureProvider<List<Prayer>>((ref) => loadPrayers());
 
@@ -24,12 +44,10 @@ final chantsQueryProvider = StateProvider<String>((ref) => '');
 final showOnlyFavoritesProvider = StateProvider<bool>((ref) => false);
 
 // Favoris (Hive)
-final favoritesBoxProvider =
-    Provider<Box<dynamic>>((ref) => Hive.box('favorites'));
+final favoritesBoxProvider = Provider<Box<dynamic>>((ref) => Hive.box('favorites'));
 
 // État favori réactif pour un chant donné (mise à jour via box.watch)
-final isFavoriteProvider =
-    StreamProvider.family<bool, int>((ref, chantId) async* {
+final isFavoriteProvider = StreamProvider.family<bool, int>((ref, chantId) async* {
   final box = ref.watch(favoritesBoxProvider);
   final key = chantId.toString();
   // valeur initiale

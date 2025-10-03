@@ -6,8 +6,7 @@ class LogoHeader extends StatelessWidget {
   final String title;
   final double logoSize;
 
-  const LogoHeader(
-      {super.key, this.title = 'Pèlerinage Saint-Michel', this.logoSize = 96});
+  const LogoHeader({super.key, this.title = 'Pèlerinage Saint-Michel', this.logoSize = 96});
 
   @override
   Widget build(BuildContext context) {

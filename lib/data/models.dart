@@ -4,8 +4,7 @@ class ProgrammeEntry {
   final String? place;
   final String? notes;
 
-  ProgrammeEntry(
-      {required this.time, required this.title, this.place, this.notes});
+  ProgrammeEntry({required this.time, required this.title, this.place, this.notes});
 
   factory ProgrammeEntry.fromJson(Map<String, dynamic> json) {
     return ProgrammeEntry(
@@ -29,8 +28,7 @@ class ProgrammeDay {
   final String label;
   final List<ProgrammeEntry> entries;
 
-  ProgrammeDay(
-      {required this.date, required this.label, required this.entries});
+  ProgrammeDay({required this.date, required this.label, required this.entries});
 
   factory ProgrammeDay.fromJson(Map<String, dynamic> json) {
     final items = (json['entries'] as List<dynamic>? ?? [])
@@ -56,11 +54,7 @@ class Chant {
   final List<String> refrain;
   final List<String> verses;
 
-  Chant(
-      {required this.id,
-      required this.title,
-      required this.refrain,
-      required this.verses});
+  Chant({required this.id, required this.title, required this.refrain, required this.verses});
 
   factory Chant.fromJson(Map<String, dynamic> json) {
     // Accept either numeric ids or string ids like "c1"
@@ -78,17 +72,12 @@ class Chant {
     return Chant(
       id: parsedId,
       title: json['title'] as String,
-      refrain: (json['refrain'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
-      verses: (json['verses'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
+      refrain: (json['refrain'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+      verses: (json['verses'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'title': title, 'refrain': refrain, 'verses': verses};
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'refrain': refrain, 'verses': verses};
 }
 
 class MeditationSection {
@@ -105,9 +94,7 @@ class MeditationSection {
   factory MeditationSection.fromJson(Map<String, dynamic> json) {
     return MeditationSection(
       text: json['text'] as String,
-      bullets: (json['bullets'] as List<dynamic>? ?? [])
-          .map((e) => e.toString())
-          .toList(),
+      bullets: (json['bullets'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
       prayer: json['prayer'] as String?,
     );
   }
@@ -157,8 +144,7 @@ class Prayer {
   final String? source; // e.g., auteur/pape
   final String text;
 
-  Prayer(
-      {required this.id, required this.title, this.source, required this.text});
+  Prayer({required this.id, required this.title, this.source, required this.text});
 
   factory Prayer.fromJson(Map<String, dynamic> json) {
     return Prayer(
