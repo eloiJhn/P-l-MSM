@@ -313,7 +313,6 @@ class _AgendaEntry extends StatelessWidget {
     );
   }
 }
-}
 
 Color _colorWithAlpha(Color color, double opacity) {
   final clamped = opacity.clamp(0.0, 1.0);
