@@ -1,4 +1,4 @@
-package com.example.pelerinage_msm
+package com.pelerinage.msm
 
 import io.flutter.embedding.android.FlutterActivity
 

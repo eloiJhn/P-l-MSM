@@ -7,6 +7,7 @@ import 'providers.dart';
 import 'data/assets_repository.dart';
 import 'notifications/notification_service.dart';
 import 'utils/image_cache.dart';
+import 'pages/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,8 @@ class PelerinageApp extends ConsumerStatefulWidget {
 }
 
 class _PelerinageAppState extends ConsumerState<PelerinageApp> {
+  bool _showSplash = true;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -44,12 +47,26 @@ class _PelerinageAppState extends ConsumerState<PelerinageApp> {
   Widget build(BuildContext context) {
     final isDarkMode = ref.watch(themeProvider);
 
-    return MaterialApp.router(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(isDark: false),
       darkTheme: buildAppTheme(isDark: true),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      routerConfig: goRouter,
+      home: _showSplash
+          ? SplashScreen(
+              onComplete: () {
+                setState(() {
+                  _showSplash = false;
+                });
+              },
+            )
+          : MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              theme: buildAppTheme(isDark: false),
+              darkTheme: buildAppTheme(isDark: true),
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              routerConfig: goRouter,
+            ),
     );
   }
 }
