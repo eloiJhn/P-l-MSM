@@ -2,11 +2,11 @@
 
 ## À propos de l'application
 
-**Guide MSM** est une application indépendante et non officielle créée pour accompagner les pèlerins dans leur voyage spirituel vers le Mont Saint-Michel. Cette application n'est pas affiliée à l'organisation officielle du pèlerinage ni à aucune institution religieuse.
+**Guide MSM** est une application indépendante et non officielle créée pour accompagner les pèlerins dans leur voyage spirituel vers le Mont Saint-Michel. Cette application n'est pas affiliée au Mont Saint Michel.
 
 ## Comment obtenir de l'aide
 
-Pour toute question, suggestion ou problème technique concernant l'application, vous pouvez nous contacter via :
+Pour toute question, suggestion ou problème technique concernant l'application, vous pouvez me contacter via :
 
 ### 📧 Contact Direct
 
@@ -29,7 +29,7 @@ Si vous rencontrez un problème technique :
 
 Nous sommes ouverts à vos suggestions ! N'hésitez pas à :
 - Ouvrir une [issue sur GitHub](https://github.com/eloiJhn/P-l-MSM/issues/new) avec le tag "enhancement"
-- Nous contacter via [LinkedIn](https://www.linkedin.com/in/eloi-jahan/)
+- Me contacter via [LinkedIn](https://www.linkedin.com/in/eloi-jahan/)
 
 ## Questions fréquentes (FAQ)
 
