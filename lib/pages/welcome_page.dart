@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme.dart';
 import '../providers.dart';
 
@@ -108,34 +109,30 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: kDore.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'Pèlerinage des jeunes du grand ouest',
-                                style: leagueSpartanStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: kDore,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: Text(
-                              'Vers le Mont Saint-Michel',
-                              style: leagueSpartanStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                color: kOutremer,
-                                height: 1.15,
-                              ),
+                            child: RichText(
                               textAlign: TextAlign.center,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'PÈLERINAGE DES JEUNES\nDU GRAND OUEST\n',
+                                    style: leagueSpartanStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: kOutremer,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'au Mont-Saint-Michel',
+                                    style: leagueSpartanStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: kDore,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 18),
@@ -163,6 +160,8 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
                           const SizedBox(height: 12),
                           _p("Que ce pèlerinage soit pour toi, en ce début d'année, l'occasion de centrer ta vie sur l'Essentiel et de faire l'expérience joyeuse et stimulante de la fraternité chrétienne.",
                               isDarkMode),
+                          const SizedBox(height: 24),
+                          _VideoCard(isDarkMode: isDarkMode),
                           const SizedBox(height: 18),
                           Text(
                             'Bon pèlerinage !',
@@ -239,6 +238,136 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           ],
         ),
       );
+}
+
+// Video card widget
+class _VideoCard extends StatelessWidget {
+  final bool isDarkMode;
+
+  const _VideoCard({required this.isDarkMode});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        final url = Uri.parse('https://www.youtube.com/watch?v=JJFl-EN4_Pg');
+        try {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        } catch (e) {
+          // Fallback: essayer sans spécifier le mode
+          try {
+            await launchUrl(url);
+          } catch (e) {
+            // Ignorer silencieusement si ça ne fonctionne pas
+            debugPrint('Impossible d\'ouvrir la vidéo: $e');
+          }
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDarkMode
+                ? kOutremer.withValues(alpha: 0.3)
+                : kOutremer.withValues(alpha: 0.4),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Thumbnail avec play button overlay
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/video_thumbnail.jpg',
+                    fit: BoxFit.cover,
+                    height: 200,
+                    width: double.infinity,
+                  ),
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
+                ],
+              ),
+              // Crédit
+              Container(
+                padding: const EdgeInsets.all(12),
+                color: isDarkMode
+                    ? const Color(0xFF1E1E1E)
+                    : Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Vidéo : Pèlerinage Mont Saint-Michel',
+                      style: leagueSpartanStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: isDarkMode
+                            ? Colors.white.withValues(alpha: 0.9)
+                            : kNoir,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.play_circle_outline,
+                          size: 16,
+                          color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Frère Paul Adrien',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontStyle: FontStyle.italic,
+                              color: isDarkMode
+                                  ? Colors.grey[400]
+                                  : Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // Theme switch widget

@@ -588,7 +588,7 @@ class ChantDetailPage extends ConsumerWidget {
 
   Widget _buildRefrainText(bool isDarkMode) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Refrain',
@@ -597,10 +597,10 @@ class ChantDetailPage extends ConsumerWidget {
             fontWeight: FontWeight.w700,
             color: kDore,
           ),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
         ),
         const SizedBox(height: 12),
-        ...chant.refrain.map((line) => _buildLyricLine(line, isDarkMode)),
+        ...chant.refrain.map((line) => _buildRefrainLine(line, isDarkMode)),
       ],
     );
   }
@@ -608,7 +608,7 @@ class ChantDetailPage extends ConsumerWidget {
   Widget _buildVerseText(int number, String verse, bool isDarkMode) {
     final lines = verse.split('\n');
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '$number.',
@@ -617,11 +617,29 @@ class ChantDetailPage extends ConsumerWidget {
             fontWeight: FontWeight.w700,
             color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
           ),
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
         ),
         const SizedBox(height: 12),
         ...lines.map((line) => _buildLyricLine(line, isDarkMode)),
       ],
+    );
+  }
+
+  Widget _buildRefrainLine(String line, bool isDarkMode) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Text(
+        line,
+        style: TextStyle(
+          fontSize: 16,
+          height: 1.5,
+          fontWeight: FontWeight.w700, // Gras pour le refrain
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.85)
+              : _colorWithAlpha(kNoir, 0.85),
+        ),
+        textAlign: TextAlign.left,
+      ),
     );
   }
 
@@ -637,7 +655,7 @@ class ChantDetailPage extends ConsumerWidget {
               ? Colors.white.withValues(alpha: 0.85)
               : _colorWithAlpha(kNoir, 0.85),
         ),
-        textAlign: TextAlign.center,
+        textAlign: TextAlign.left,
       ),
     );
   }

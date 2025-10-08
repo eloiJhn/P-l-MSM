@@ -153,7 +153,7 @@ class _DayPicker extends StatelessWidget {
             if (states.contains(WidgetState.selected)) {
               return isDarkMode ? Colors.white.withValues(alpha: 0.9) : kBlanc;
             }
-            return kOutremer;
+            return isDarkMode ? kOutremer : kMarineFonce;
           },
         ),
         side: WidgetStateProperty.resolveWith<BorderSide?>(
@@ -269,7 +269,7 @@ class _AgendaEntry extends StatelessWidget {
           BoxShadow(
             color: isDarkMode
                 ? Colors.black.withValues(alpha: 0.3)
-                : _colorWithAlpha(kMarine, 0.08),
+                : _colorWithAlpha(kMarineFonce, 0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),

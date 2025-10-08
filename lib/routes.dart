@@ -104,6 +104,9 @@ class _RootScaffoldState extends State<RootScaffold> {
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final double bottomGap = bottomInset > 0 ? 4.0 : 8.0;
 
+    // Détecte le mode sombre
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     // Page d'accueil sans SafeArea en haut pour que l'image monte jusqu'à la status bar
     final isWelcomePage = widget.location == routeWelcome;
     final currentIndex = _currentIndex;
@@ -150,16 +153,20 @@ class _RootScaffoldState extends State<RootScaffold> {
                   indicatorColor: kOutremer.withValues(alpha: 0.35),
                   labelTextStyle: WidgetStateProperty.resolveWith((states) {
                     final selected = states.contains(WidgetState.selected);
+                    // Blanc en mode sombre, bleu marine en mode clair
+                    final baseColor = isDarkMode ? Colors.white : kMarineFonce;
                     return leagueSpartanStyle(
                       fontSize: 12,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                      color: selected ? kMarine : kMarine.withValues(alpha: 0.75),
+                      color: selected ? baseColor : baseColor.withValues(alpha: 0.75),
                     );
                   }),
                   iconTheme: WidgetStateProperty.resolveWith((states) {
                     final selected = states.contains(WidgetState.selected);
+                    // Blanc en mode sombre, bleu marine en mode clair
+                    final baseColor = isDarkMode ? Colors.white : kMarineFonce;
                     return IconThemeData(
-                      color: selected ? kMarine : kMarine.withValues(alpha: 0.75),
+                      color: selected ? baseColor : baseColor.withValues(alpha: 0.75),
                     );
                   }),
                 ),

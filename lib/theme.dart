@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 // Couleurs — Charte MSM
 const kMarine = Color(0xFF1692AD); // #1692AD
+const kMarineFonce = Color(0xFF272A59); // #272A59 - Bleu marine foncé
 const kOutremer = Color(0xFFACBBE9); // #ACBBE9
 const kJaune = Color(0xFFFFD660); // #FFD660
 const kDore = Color(0xFFCB9D36); // #CB9D36

@@ -43,6 +43,10 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   timezone: ^0.9.2
   flutter_timezone: ^3.0.0
+  share_plus: ^10.1.4
+  just_audio: ^0.9.42
+  path_provider: ^2.1.5
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +76,7 @@ flutter:
     - assets/images/Logo MSM.svg
     - assets/images/logo_msm_transparent.svg
     - assets/images/Mont_St_Michel.jpg
+    - assets/images/video_thumbnail.jpg
     # Images spécifiques pour les prières
     - assets/images/Papa_Leon_XIII.jpeg
     - assets/images/Saint_Louis_Gonzague.jpg
