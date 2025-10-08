@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pèlerinage MSM</string>
+    <string name="app_name">Guide MSM</string>
     <string name="default_notification_channel_id">pelerinage_msm_notifications</string>
     <string name="default_notification_channel_name">Notifications du pèlerinage</string>
     <string name="default_notification_channel_description">Notifications pour les événements du pèlerinage</string>

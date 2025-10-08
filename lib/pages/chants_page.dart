@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../data/models.dart';
 import '../providers.dart';
@@ -510,6 +511,12 @@ class ChantDetailPage extends ConsumerWidget {
           ),
           actions: [
             IconButton(
+              tooltip: 'Partager le chant',
+              icon: const Icon(Icons.share),
+              color: kOutremer,
+              onPressed: () => _shareChant(context, chant),
+            ),
+            IconButton(
               tooltip: isFav ? 'Retirer des favoris' : 'Ajouter aux favoris',
               icon: Icon(
                 isFav ? Icons.favorite : Icons.favorite_border,
@@ -534,6 +541,11 @@ class ChantDetailPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
+            const SizedBox(height: 24),
+
+            // Lecteur audio si disponible
+            _AudioPlayerWidget(chantId: chant.id, chantTitle: chant.title),
+
             const SizedBox(height: 40),
 
             // Organisation: Refrain puis alternance couplet-refrain
@@ -660,4 +672,285 @@ class ChantDetailPage extends ConsumerWidget {
 Color _colorWithAlpha(Color color, double opacity) {
   final clamped = opacity.clamp(0.0, 1.0);
   return color.withAlpha((clamped * 255).round());
+}
+
+/// Widget de lecture audio pour un chant
+class _AudioPlayerWidget extends ConsumerStatefulWidget {
+  final int chantId;
+  final String chantTitle;
+
+  const _AudioPlayerWidget({
+    required this.chantId,
+    required this.chantTitle,
+  });
+
+  @override
+  ConsumerState<_AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
+}
+
+class _AudioPlayerWidgetState extends ConsumerState<_AudioPlayerWidget> {
+  @override
+  void initState() {
+    super.initState();
+    // Écoute les changements du service audio pour mettre à jour l'UI
+    final audioService = ref.read(audioServiceProvider);
+    audioService.addListener(_onAudioChange);
+  }
+
+  @override
+  void dispose() {
+    final audioService = ref.read(audioServiceProvider);
+    audioService.removeListener(_onAudioChange);
+    super.dispose();
+  }
+
+  void _onAudioChange() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final audioService = ref.watch(audioServiceProvider);
+    final isDarkMode = ref.watch(themeProvider);
+
+    // Vérifie si un audio existe pour ce chant
+    final hasAudio = audioService.hasAudio(widget.chantId);
+
+    if (!hasAudio) {
+      return const SizedBox.shrink(); // N'affiche rien si pas d'audio
+    }
+
+    final isCurrentChant = audioService.currentChantId == widget.chantId;
+    final isPlaying = audioService.isPlaying && isCurrentChant;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDarkMode
+            ? const Color(0xFF1E1E1E)
+            : _colorWithAlpha(kOutremer, 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDarkMode
+              ? Colors.grey[800]!
+              : _colorWithAlpha(kOutremer, 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Badge "Audio"
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: kDore,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.music_note, size: 14, color: kBlanc),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Audio',
+                      style: leagueSpartanStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: kBlanc,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Bouton Play/Pause et contrôles
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Bouton reculer de 10s
+              IconButton(
+                icon: const Icon(Icons.replay_10),
+                iconSize: 32,
+                color: kOutremer,
+                onPressed: isCurrentChant
+                    ? () async {
+                        final currentPos = audioService.position;
+                        final newPosition = currentPos - const Duration(seconds: 10);
+                        final seekTo = newPosition.isNegative ? Duration.zero : newPosition;
+                        await audioService.seek(seekTo);
+                        // Force le rebuild immédiat
+                        if (mounted) {
+                          setState(() {});
+                          // Petit délai pour laisser le player se mettre à jour
+                          await Future.delayed(const Duration(milliseconds: 50));
+                          if (mounted) setState(() {});
+                        }
+                      }
+                    : null,
+              ),
+              const SizedBox(width: 8),
+              // Bouton Play/Pause principal
+              IconButton(
+                icon: Icon(
+                  isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                  size: 64,
+                  color: kOutremer,
+                ),
+                onPressed: () async {
+                  if (isPlaying) {
+                    await audioService.pause();
+                  } else if (isCurrentChant) {
+                    await audioService.resume();
+                  } else {
+                    await audioService.playChant(widget.chantId, widget.chantTitle);
+                  }
+                  setState(() {});
+                },
+              ),
+              const SizedBox(width: 8),
+              // Bouton avancer de 10s
+              IconButton(
+                icon: const Icon(Icons.forward_10),
+                iconSize: 32,
+                color: kOutremer,
+                onPressed: isCurrentChant
+                    ? () async {
+                        final currentPos = audioService.position;
+                        final newPosition = currentPos + const Duration(seconds: 10);
+                        final maxDuration = audioService.duration;
+                        final seekTo = newPosition > maxDuration ? maxDuration : newPosition;
+                        await audioService.seek(seekTo);
+                        // Force le rebuild immédiat
+                        if (mounted) {
+                          setState(() {});
+                          // Petit délai pour laisser le player se mettre à jour
+                          await Future.delayed(const Duration(milliseconds: 50));
+                          if (mounted) setState(() {});
+                        }
+                      }
+                    : null,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Barre de progression
+          if (isCurrentChant) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  Slider(
+                    value: audioService.duration.inSeconds > 0
+                        ? audioService.position.inSeconds.toDouble()
+                        : 0.0,
+                    max: audioService.duration.inSeconds > 0
+                        ? audioService.duration.inSeconds.toDouble()
+                        : 1.0,
+                    activeColor: kOutremer,
+                    inactiveColor: isDarkMode
+                        ? Colors.grey[700]
+                        : _colorWithAlpha(kOutremer, 0.3),
+                    onChanged: (value) async {
+                      await audioService.seek(Duration(seconds: value.toInt()));
+                      // Force le rebuild immédiat pour l'UI
+                      if (mounted) {
+                        setState(() {});
+                        // Petit délai pour synchroniser avec le player
+                        await Future.delayed(const Duration(milliseconds: 50));
+                        if (mounted) setState(() {});
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _formatDuration(audioService.position),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDarkMode
+                                ? Colors.grey[400]
+                                : _colorWithAlpha(kNoir, 0.6),
+                          ),
+                        ),
+                        Text(
+                          _formatDuration(audioService.duration),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDarkMode
+                                ? Colors.grey[400]
+                                : _colorWithAlpha(kNoir, 0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            // Texte quand pas de lecture en cours
+            Text(
+              'Écouter l\'accompagnement',
+              style: TextStyle(
+                fontSize: 14,
+                color: isDarkMode
+                    ? Colors.grey[400]
+                    : _colorWithAlpha(kNoir, 0.6),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Formate une durée en format MM:SS
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+}
+
+/// Partage le contenu d'un chant via le share sheet natif iOS
+void _shareChant(BuildContext context, Chant chant) {
+  final buffer = StringBuffer();
+  buffer.writeln('🎵 Chant ${chant.id.toString().padLeft(2, '0')} - ${chant.title}\n');
+
+  // Refrain
+  if (chant.refrain.isNotEmpty) {
+    buffer.writeln('Refrain:');
+    for (final line in chant.refrain) {
+      buffer.writeln(line);
+    }
+    buffer.writeln();
+  }
+
+  // Couplets
+  for (int i = 0; i < chant.verses.length; i++) {
+    buffer.writeln('${i + 1}.');
+    buffer.writeln(chant.verses[i]);
+    buffer.writeln();
+  }
+
+  buffer.writeln('Partagé depuis l\'app Pèlerinage MSM 🙏');
+
+  Share.share(
+    buffer.toString(),
+    subject: 'Chant ${chant.id} - ${chant.title}',
+  );
 }

@@ -1,11 +1,11 @@
 {
-    "name": "pelerinage_msm",
-    "short_name": "pelerinage_msm",
+    "name": "Guide MSM",
+    "short_name": "Guide MSM",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Guide MSM - Application indépendante pour les pèlerins du Mont Saint-Michel",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

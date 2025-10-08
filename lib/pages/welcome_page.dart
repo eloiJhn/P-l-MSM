@@ -116,12 +116,43 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                'Pèlerinage des jeunes du grand ouest',
+                                'Guide indépendant',
                                 style: leagueSpartanStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: kDore,
                                 ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? Colors.grey.withValues(alpha: 0.2)
+                                    : Colors.grey.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: isDarkMode
+                                      ? Colors.grey.withValues(alpha: 0.3)
+                                      : Colors.grey.withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                'Application non officielle\nCréée par un passionné pour les pèlerins',
+                                style: leagueSpartanStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDarkMode
+                                      ? Colors.grey.withValues(alpha: 0.8)
+                                      : Colors.grey.shade600,
+                                  height: 1.4,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),

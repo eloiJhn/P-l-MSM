@@ -18,9 +18,9 @@ class LocalNotificationService {
   static bool _ready = false;
 
   static const String _channelId = 'programme_channel';
-  static const String _channelName = 'Programme du pèlerinage';
+  static const String _channelName = 'Programme Guide MSM';
   static const String _channelDesc =
-      'Rappels élégants des étapes du programme (11–12 oct. 2025)';
+      'Rappels des étapes du programme (11–12 oct. 2025)';
 
   static void _log(String message) {
     debugPrint(message);
@@ -236,7 +236,7 @@ class LocalNotificationService {
           await _plugin.zonedSchedule(
             id++,
             title,
-            body.isEmpty ? 'Pèlerinage MSM' : body,
+            body.isEmpty ? 'Guide MSM' : body,
             tzDate,
             _details(bigText: body.isEmpty ? title : '$title\n\n$body'),
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,

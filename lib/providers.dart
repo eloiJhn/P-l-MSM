@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 
 import 'data/assets_repository.dart';
 import 'data/models.dart';
+import 'services/audio_service.dart';
 
 // Thème sombre/clair
 final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) {
@@ -79,3 +80,10 @@ List<int> getFavoriteChantIds() {
       .where((id) => id > 0)
       .toList();
 }
+
+// Service audio pour les chants
+final audioServiceProvider = Provider<AudioService>((ref) {
+  final service = AudioService();
+  service.init();
+  return service;
+});

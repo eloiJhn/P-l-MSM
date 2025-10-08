@@ -8,6 +8,7 @@ import 'data/assets_repository.dart';
 import 'notifications/notification_service.dart';
 import 'utils/image_cache.dart';
 import 'pages/splash_screen.dart';
+import 'pages/onboarding_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,21 @@ class PelerinageApp extends ConsumerStatefulWidget {
 
 class _PelerinageAppState extends ConsumerState<PelerinageApp> {
   bool _showSplash = true;
+  bool _showOnboarding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboarding();
+  }
+
+  Future<void> _checkOnboarding() async {
+    final box = Hive.box('prefs');
+    final hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false) as bool;
+    setState(() {
+      _showOnboarding = !hasSeenOnboarding;
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -60,13 +76,21 @@ class _PelerinageAppState extends ConsumerState<PelerinageApp> {
                 });
               },
             )
-          : MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              theme: buildAppTheme(isDark: false),
-              darkTheme: buildAppTheme(isDark: true),
-              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-              routerConfig: goRouter,
-            ),
+          : _showOnboarding
+              ? OnboardingPage(
+                  onComplete: () {
+                    setState(() {
+                      _showOnboarding = false;
+                    });
+                  },
+                )
+              : MaterialApp.router(
+                  debugShowCheckedModeBanner: false,
+                  theme: buildAppTheme(isDark: false),
+                  darkTheme: buildAppTheme(isDark: true),
+                  themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                  routerConfig: goRouter,
+                ),
     );
   }
 }

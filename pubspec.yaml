@@ -1,5 +1,5 @@
 name: pelerinage_msm
-description: "Application officielle du pèlerinage des jeunes au Mont Saint-Michel"
+description: "Guide MSM - Application indépendante pour les pèlerins du Mont Saint-Michel"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -43,6 +43,10 @@ dependencies:
   flutter_local_notifications: ^17.1.2
   timezone: ^0.9.2
   flutter_timezone: ^3.0.0
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+  just_audio: ^0.9.42
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +87,8 @@ flutter:
     - assets/content/chants.json
     - assets/content/meditations.json
     - assets/content/prieres.json
+    # Fichiers audio pour les chants (fonctionnalité iOS native)
+    - assets/audio/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

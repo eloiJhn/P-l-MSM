@@ -4,6 +4,7 @@ import 'pages/welcome_page.dart';
 import 'pages/programme_page.dart';
 import 'pages/chants_page.dart';
 import 'pages/meditations_page.dart';
+import 'pages/about_page.dart';
 import 'theme.dart';
 
 // Paths
@@ -11,6 +12,7 @@ const String routeWelcome = '/';
 const String routeProgramme = '/programme';
 const String routeChants = '/chants';
 const String routeMeditations = '/meditations';
+const String routeAbout = '/about';
 
 // Historique de navigation global (partagé entre toutes les instances)
 final _navigationHistory = <int>[0];
@@ -38,6 +40,11 @@ final GoRouter goRouter = GoRouter(
       name: 'meditations',
       builder: (context, state) => const RootScaffold(location: routeMeditations),
     ),
+    GoRoute(
+      path: routeAbout,
+      name: 'about',
+      builder: (context, state) => const RootScaffold(location: routeAbout),
+    ),
   ],
 );
 
@@ -56,6 +63,7 @@ class _RootScaffoldState extends State<RootScaffold> {
     routeProgramme,
     routeChants,
     routeMeditations,
+    routeAbout,
   ];
 
   // Pages créées une seule fois et gardées en mémoire
@@ -64,6 +72,7 @@ class _RootScaffoldState extends State<RootScaffold> {
     ProgrammePage(),
     ChantsPage(),
     MeditationsPage(),
+    AboutPage(),
   ];
 
   int get _currentIndex {
@@ -72,6 +81,7 @@ class _RootScaffoldState extends State<RootScaffold> {
     if (widget.location == routeProgramme) return 1;
     if (widget.location == routeChants) return 2;
     if (widget.location == routeMeditations) return 3;
+    if (widget.location == routeAbout) return 4;
     return 0; // par défaut sur Accueil
   }
 
@@ -99,6 +109,9 @@ class _RootScaffoldState extends State<RootScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    // Détection iPad/Tablet
+    final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
+
     // Espace dynamiquement la barre du bord bas: sur iPhone (home indicator),
     // on colle un peu plus (4px), sinon on laisse 8px.
     final bottomInset = MediaQuery.of(context).padding.bottom;
@@ -124,7 +137,112 @@ class _RootScaffoldState extends State<RootScaffold> {
           context.go(routeWelcome);
         }
       },
-      child: Scaffold(
+      child: isTablet ? _buildTabletLayout(context, isWelcomePage, currentIndex) : _buildPhoneLayout(context, isWelcomePage, currentIndex, bottomGap),
+    );
+  }
+
+  // Layout pour iPad/Tablet avec NavigationRail à gauche
+  Widget _buildTabletLayout(BuildContext context, bool isWelcomePage, int currentIndex) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      body: Row(
+        children: [
+          // Navigation Rail à gauche
+          Container(
+            decoration: BoxDecoration(
+              color: isDarkMode ? const Color(0xFF1E1E1E) : kBlanc,
+              border: Border(
+                right: BorderSide(
+                  color: kMarine.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: SafeArea(
+              child: NavigationRail(
+                selectedIndex: currentIndex,
+                onDestinationSelected: (index) {
+                  final target = _tabs[index];
+                  if (target != widget.location) context.go(target);
+                },
+                labelType: NavigationRailLabelType.all,
+                backgroundColor: Colors.transparent,
+                indicatorColor: kOutremer.withValues(alpha: 0.2),
+                selectedIconTheme: IconThemeData(
+                  color: kOutremer,
+                  size: 28,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: kMarine.withValues(alpha: 0.5),
+                  size: 24,
+                ),
+                selectedLabelTextStyle: leagueSpartanStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: kOutremer,
+                ),
+                unselectedLabelTextStyle: leagueSpartanStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: kMarine.withValues(alpha: 0.7),
+                ),
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Icon(
+                    Icons.church,
+                    size: 32,
+                    color: kDore,
+                  ),
+                ),
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: Text('Accueil'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.calendar_today_outlined),
+                    selectedIcon: Icon(Icons.calendar_today),
+                    label: Text('Programme'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.music_note_outlined),
+                    selectedIcon: Icon(Icons.music_note),
+                    label: Text('Chants'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.auto_stories_outlined),
+                    selectedIcon: Icon(Icons.auto_stories),
+                    label: Text('Méditations'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.info_outline),
+                    selectedIcon: Icon(Icons.info),
+                    label: Text('À propos'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Contenu principal
+          Expanded(
+            child: SafeArea(
+              top: !isWelcomePage,
+              child: IndexedStack(
+                index: currentIndex,
+                children: _pages,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Layout pour iPhone/Phone avec BottomNavigationBar
+  Widget _buildPhoneLayout(BuildContext context, bool isWelcomePage, int currentIndex, double bottomGap) {
+    return Scaffold(
       body: SafeArea(
         top: !isWelcomePage,
         child: IndexedStack(
@@ -187,13 +305,16 @@ class _RootScaffoldState extends State<RootScaffold> {
                       icon: Icon(Icons.auto_stories),
                       label: 'Méditations',
                     ),
+                    NavigationDestination(
+                      icon: Icon(Icons.info),
+                      label: 'À propos',
+                    ),
                   ],
                 ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

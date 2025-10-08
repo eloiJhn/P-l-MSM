@@ -11,7 +11,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
   late AnimationController _shimmerController;
@@ -166,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                               ).createShader(bounds);
                             },
                             child: Text(
-                              'Pèlerinage',
+                              'Guide',
                               style: leagueSpartanStyle(
                                 fontSize: 48,
                                 fontWeight: FontWeight.w900,
