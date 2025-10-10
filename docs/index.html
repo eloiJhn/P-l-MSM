@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pèlerinage Saint-Michel — Application Android</title>
   <meta name="description" content="Téléchargez l'application officielle du Pèlerinage des Jeunes au Mont Saint-Michel. Guide complet pour installer l'APK sur tous les smartphones Android." />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DPNT5JZRHW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DPNT5JZRHW');
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +29,7 @@
       </div>
       <h1>Pèlerinage Saint-Michel</h1>
       <p class="subtitle">Application officielle du pèlerinage</p>
-      <a href="pelerinage_msm.apk" download class="btn-download">
+      <a href="pelerinage_msm.apk" download class="btn-download" id="download-btn">
         <span class="btn-icon">⬇️</span>
         Télécharger l'APK
       </a>
@@ -192,5 +202,16 @@
     <img src="Logo MSM.svg" alt="Logo MSM" class="footer-logo" onerror="this.style.display='none'" />
     <p>© 2025 Pèlerinage des Jeunes au Mont Saint-Michel</p>
   </footer>
+
+  <!-- Track download button clicks -->
+  <script>
+    document.getElementById('download-btn').addEventListener('click', function() {
+      gtag('event', 'download_apk', {
+        'event_category': 'APK',
+        'event_label': 'Pèlerinage MSM Android',
+        'value': 1
+      });
+    });
+  </script>
 </body>
 </html>
