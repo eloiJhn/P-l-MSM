@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pèlerinage Saint‑Michel — APK Android</title>
+    <meta name="description" content="Téléchargez l’application Android du Pèlerinage des Jeunes au Mont Saint‑Michel et suivez le guide pour autoriser l’installation depuis sources inconnues (Samsung, Xiaomi, Huawei, etc.)." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" href="../P-l-MSM/web/favicon.png" />
+  </head>
+  <body>
+    <header class="container">
+      <div class="brand">
+        <img src="../Logo MSM.svg" alt="Logo MSM" class="logo" />
+        <div>
+          <h1>Pèlerinage Saint‑Michel</h1>
+          <p class="subtitle">Application Android officielle</p>
+        </div>
+      </div>
+      <a id="apk-link" class="btn btn-primary" href="./app-release.apk" download>
+        <span class="btn-icon">⬇</span>
+        Télécharger l’APK
+      </a>
+      <p class="notice">Après le téléchargement, si Android vous le demande, autorisez l’installation d’apps depuis « sources inconnues ».</p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2 class="section-title">Comment installer l’APK</h2>
+        <ol class="steps">
+          <li>Appuyez sur « Télécharger l’APK » ci‑dessus.</li>
+          <li>Une fois le fichier téléchargé, ouvrez‑le depuis la notification ou votre app Fichiers.</li>
+          <li>Android affiche un avertissement. Choisissez « Paramètres » puis autorisez l’installation depuis cette source.</li>
+          <li>Revenez en arrière et validez « Installer ».</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Activer les « sources inconnues » par marque</h2>
+
+        <details class="brand" open>
+          <summary><span class="badge">1</span> Samsung (One UI)</summary>
+          <ul>
+            <li>Paramètres → Sécurité et confidentialité → Installer des applis inconnues.</li>
+            <li>Choisissez votre navigateur (Chrome, Samsung Internet, etc.) → Autoriser depuis cette source.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">2</span> Xiaomi / Redmi / POCO (MIUI)</summary>
+          <ul>
+            <li>Paramètres → Mots de passe et sécurité → Confidentialité → Paramètres spéciaux.</li>
+            <li>Installer des applis inconnues → Sélectionnez le navigateur → Autoriser depuis cette source.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">3</span> Huawei / Honor (EMUI / MagicUI)</summary>
+          <ul>
+            <li>Paramètres → Sécurité → Plus de paramètres → Installer des applis inconnues.</li>
+            <li>Choisissez l’app (navigateur / fichiers) → Autoriser cette source.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">4</span> OPPO / realme (ColorOS)</summary>
+          <ul>
+            <li>Paramètres → Sécurité → Plus de paramètres → Installer des applis inconnues.</li>
+            <li>Sélectionnez l’app source → Autoriser depuis cette source.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">5</span> OnePlus (OxygenOS)</summary>
+          <ul>
+            <li>Paramètres → Sécurité et confidentialité → Installation d’applis inconnues.</li>
+            <li>Choisissez le navigateur / fichiers → Autoriser.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">6</span> Google Pixel (Android stock)</summary>
+          <ul>
+            <li>Paramètres → Sécurité et confidentialité → Plus de paramètres de sécurité.</li>
+            <li>Installer des applis inconnues → App source → Autoriser.</li>
+          </ul>
+        </details>
+
+        <details class="brand">
+          <summary><span class="badge">7</span> Motorola / Sony / Nokia / Nothing</summary>
+          <ul>
+            <li>Paramètres → Sécurité et confidentialité → Installer des applis inconnues.</li>
+            <li>Sélectionnez le navigateur ou l’app Fichiers → Autoriser.</li>
+          </ul>
+        </details>
+
+        <p class="hint">Astuce: si l’option n’apparaît pas, recherchez « inconnues » dans la barre de recherche des Paramètres.</p>
+      </section>
+
+      <section class="card alt">
+        <h2 class="section-title">Questions fréquentes</h2>
+        <details>
+          <summary>Le bouton « Installer » n’apparaît pas</summary>
+          <p>Éteignez le mode sombre ou activez l’orientation portrait, puis réessayez. Sur certains modèles, le bouton est masqué par une app de filtre d’écran: désactivez‑la le temps de l’installation.</p>
+        </details>
+        <details>
+          <summary>L’APK est bloqué par Play Protect</summary>
+          <p>Play Protect peut alerter pour toute app hors Play Store. Appuyez sur « Plus de détails » → « Installer quand même ».</p>
+        </details>
+      </section>
+    </main>
+
+    <footer class="container footer">
+      <img src="../Logo MSM.svg" alt="Logo MSM" class="logo small" />
+      <p>© Pèlerinage des Jeunes au Mont Saint‑Michel — 2025</p>
+    </footer>
+
+    <script>
+      // Si vous publiez l’APK dans les Releases GitHub, dé-commentez la ligne ci‑dessous
+      // document.getElementById('apk-link').href = 'https://github.com/eloijhn/P-l-MSM/releases/latest/download/app-release.apk';
+    </script>
+  </body>
+  </html>
+
+
