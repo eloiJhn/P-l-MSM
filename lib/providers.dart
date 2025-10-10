@@ -27,15 +27,20 @@ class ThemeNotifier extends StateNotifier<bool> {
 }
 
 // Lecture des contenus (assets)
-final programmeProvider = FutureProvider<List<ProgrammeDay>>((ref) => loadProgramme());
+final programmeProvider =
+    FutureProvider<List<ProgrammeDay>>((ref) => loadProgramme());
 
 final programmeSelectedDayIndexProvider = StateProvider<int>((ref) => 0);
 
 final chantsProvider = FutureProvider<List<Chant>>((ref) => loadChants());
 
-final meditationsProvider = FutureProvider<List<Meditation>>((ref) => loadMeditations());
+final meditationsProvider =
+    FutureProvider<List<Meditation>>((ref) => loadMeditations());
 
 final prayersProvider = FutureProvider<List<Prayer>>((ref) => loadPrayers());
+
+final vepresProvider = FutureProvider<VepresDay>((ref) => loadVepres());
+final fratsProvider = FutureProvider<List<FratTopic>>((ref) => loadFrats());
 
 // État de recherche pour la liste des chants
 final chantsQueryProvider = StateProvider<String>((ref) => '');
@@ -44,10 +49,12 @@ final chantsQueryProvider = StateProvider<String>((ref) => '');
 final showOnlyFavoritesProvider = StateProvider<bool>((ref) => false);
 
 // Favoris (Hive)
-final favoritesBoxProvider = Provider<Box<dynamic>>((ref) => Hive.box('favorites'));
+final favoritesBoxProvider =
+    Provider<Box<dynamic>>((ref) => Hive.box('favorites'));
 
 // État favori réactif pour un chant donné (mise à jour via box.watch)
-final isFavoriteProvider = StreamProvider.family<bool, int>((ref, chantId) async* {
+final isFavoriteProvider =
+    StreamProvider.family<bool, int>((ref, chantId) async* {
   final box = ref.watch(favoritesBoxProvider);
   final key = chantId.toString();
   // valeur initiale

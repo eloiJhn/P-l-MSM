@@ -159,10 +159,10 @@ class _DayPicker extends StatelessWidget {
         side: WidgetStateProperty.resolveWith<BorderSide?>(
           (states) => BorderSide(
             color: states.contains(WidgetState.selected)
-                ? (isDarkMode ? Colors.grey[700]! : kMarine)
+                ? (isDarkMode ? Colors.grey[700]! : kMarineFonce)
                 : (isDarkMode
                     ? Colors.grey[700]!
-                    : _colorWithAlpha(kMarine, 0.3)),
+                    : _colorWithAlpha(kMarineFonce, 0.3)),
           ),
         ),
         shape: WidgetStateProperty.all(
@@ -261,7 +261,7 @@ class _AgendaEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border(
           left: BorderSide(
-            color: isDarkMode ? kMarine.withValues(alpha: 0.4) : kMarine,
+            color: isDarkMode ? kMarineFonce.withValues(alpha: 0.4) : kMarineFonce,
             width: 4,
           ),
         ),

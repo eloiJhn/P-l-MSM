@@ -186,14 +186,14 @@ class _ChantSearchField extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
             color:
-                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarine, 0.25),
+                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarineFonce, 0.25),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
             color:
-                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarine, 0.2),
+                isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kMarineFonce, 0.2),
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -228,7 +228,7 @@ class _ResultBadge extends StatelessWidget {
           decoration: BoxDecoration(
             color: isDarkMode
                 ? const Color(0xFF2C2C2C)
-                : _colorWithAlpha(kMarine, 0.1),
+                : _colorWithAlpha(kMarineFonce, 0.1),
             borderRadius: BorderRadius.circular(12),
             border: isDarkMode
                 ? Border.all(color: Colors.grey[700]!, width: 1)
@@ -345,10 +345,10 @@ class _FavoritesFilter extends StatelessWidget {
               side: WidgetStateProperty.resolveWith<BorderSide?>(
                 (states) => BorderSide(
                   color: states.contains(WidgetState.selected)
-                      ? (isDarkMode ? Colors.grey[700]! : kMarine)
+                      ? (isDarkMode ? Colors.grey[700]! : kMarineFonce)
                       : (isDarkMode
                           ? Colors.grey[700]!
-                          : _colorWithAlpha(kMarine, 0.3)),
+                          : _colorWithAlpha(kMarineFonce, 0.3)),
                 ),
               ),
               shape: WidgetStateProperty.all(
@@ -615,7 +615,7 @@ class ChantDetailPage extends ConsumerWidget {
           style: leagueSpartanStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: isDarkMode ? const Color(0xFF81A3C1) : kMarine,
+            color: isDarkMode ? const Color(0xFF81A3C1) : kMarineFonce,
           ),
           textAlign: TextAlign.left,
         ),
@@ -667,7 +667,7 @@ class ChantDetailPage extends ConsumerWidget {
         style: TextStyle(
           fontSize: 16,
           fontStyle: FontStyle.italic,
-          color: isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarine, 0.6),
+          color: isDarkMode ? Colors.grey[500] : _colorWithAlpha(kMarineFonce, 0.6),
         ),
         textAlign: TextAlign.center,
       ),

@@ -88,6 +88,8 @@ flutter:
     - assets/content/chants.json
     - assets/content/meditations.json
     - assets/content/prieres.json
+    - assets/content/vepres_samedi.json
+    - assets/content/frats.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

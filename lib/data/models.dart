@@ -4,7 +4,8 @@ class ProgrammeEntry {
   final String? place;
   final String? notes;
 
-  ProgrammeEntry({required this.time, required this.title, this.place, this.notes});
+  ProgrammeEntry(
+      {required this.time, required this.title, this.place, this.notes});
 
   factory ProgrammeEntry.fromJson(Map<String, dynamic> json) {
     return ProgrammeEntry(
@@ -28,7 +29,8 @@ class ProgrammeDay {
   final String label;
   final List<ProgrammeEntry> entries;
 
-  ProgrammeDay({required this.date, required this.label, required this.entries});
+  ProgrammeDay(
+      {required this.date, required this.label, required this.entries});
 
   factory ProgrammeDay.fromJson(Map<String, dynamic> json) {
     final items = (json['entries'] as List<dynamic>? ?? [])
@@ -54,7 +56,11 @@ class Chant {
   final List<String> refrain;
   final List<String> verses;
 
-  Chant({required this.id, required this.title, required this.refrain, required this.verses});
+  Chant(
+      {required this.id,
+      required this.title,
+      required this.refrain,
+      required this.verses});
 
   factory Chant.fromJson(Map<String, dynamic> json) {
     // Accept either numeric ids or string ids like "c1"
@@ -72,12 +78,17 @@ class Chant {
     return Chant(
       id: parsedId,
       title: json['title'] as String,
-      refrain: (json['refrain'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
-      verses: (json['verses'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+      refrain: (json['refrain'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      verses: (json['verses'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
     );
   }
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'refrain': refrain, 'verses': verses};
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'title': title, 'refrain': refrain, 'verses': verses};
 }
 
 class MeditationSection {
@@ -94,7 +105,9 @@ class MeditationSection {
   factory MeditationSection.fromJson(Map<String, dynamic> json) {
     return MeditationSection(
       text: json['text'] as String,
-      bullets: (json['bullets'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+      bullets: (json['bullets'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
       prayer: json['prayer'] as String?,
     );
   }
@@ -144,7 +157,8 @@ class Prayer {
   final String? source; // e.g., auteur/pape
   final String text;
 
-  Prayer({required this.id, required this.title, this.source, required this.text});
+  Prayer(
+      {required this.id, required this.title, this.source, required this.text});
 
   factory Prayer.fromJson(Map<String, dynamic> json) {
     return Prayer(
@@ -160,5 +174,100 @@ class Prayer {
         'title': title,
         if (source != null) 'source': source,
         'text': text,
+      };
+}
+
+// Contenu pour les "Temps de frat"
+class FratTopic {
+  final int id;
+  final String title;
+  final List<String> questions;
+
+  FratTopic({required this.id, required this.title, required this.questions});
+
+  factory FratTopic.fromJson(Map<String, dynamic> json) {
+    return FratTopic(
+      id: json['id'] as int,
+      title: json['title'] as String,
+      questions: (json['questions'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'questions': questions,
+      };
+}
+
+// Modèles pour les Vêpres
+class VepresSection {
+  final String
+      type; // introduction, hymne, psaume, antienne, cantique, parole, repons, intercession, oraison
+  final String? title;
+  final String? subtitle;
+  final List<String> content;
+  final String? antienne;
+
+  VepresSection({
+    required this.type,
+    this.title,
+    this.subtitle,
+    required this.content,
+    this.antienne,
+  });
+
+  factory VepresSection.fromJson(Map<String, dynamic> json) {
+    return VepresSection(
+      type: json['type'] as String,
+      title: json['title'] as String?,
+      subtitle: json['subtitle'] as String?,
+      content: (json['content'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      antienne: json['antienne'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        if (title != null) 'title': title,
+        if (subtitle != null) 'subtitle': subtitle,
+        'content': content,
+        if (antienne != null) 'antienne': antienne,
+      };
+}
+
+class VepresDay {
+  final String date;
+  final String label;
+  final String occasion;
+  final List<VepresSection> sections;
+
+  VepresDay({
+    required this.date,
+    required this.label,
+    required this.occasion,
+    required this.sections,
+  });
+
+  factory VepresDay.fromJson(Map<String, dynamic> json) {
+    return VepresDay(
+      date: json['date'] as String,
+      label: json['label'] as String,
+      occasion: json['occasion'] as String,
+      sections: (json['sections'] as List<dynamic>? ?? [])
+          .map((e) => VepresSection.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'date': date,
+        'label': label,
+        'occasion': occasion,
+        'sections': sections.map((e) => e.toJson()).toList(),
       };
 }

@@ -8,6 +8,8 @@ const _programmeAssetPath = 'assets/content/programme.json';
 const _chantsAssetPath = 'assets/content/chants.json';
 const _meditationsAssetPath = 'assets/content/meditations.json';
 const _prayersAssetPath = 'assets/content/prieres.json';
+const _vepresAssetPath = 'assets/content/vepres_samedi.json';
+const _fratsAssetPath = 'assets/content/frats.json';
 
 Future<List<ProgrammeDay>> loadProgramme() async {
   final raw = await rootBundle.loadString(_programmeAssetPath);
@@ -27,11 +29,29 @@ Future<List<Chant>> loadChants() async {
 Future<List<Meditation>> loadMeditations() async {
   final raw = await rootBundle.loadString(_meditationsAssetPath);
   final decoded = json.decode(raw) as List<dynamic>;
-  return decoded.map((e) => Meditation.fromJson(e as Map<String, dynamic>)).toList();
+  return decoded
+      .map((e) => Meditation.fromJson(e as Map<String, dynamic>))
+      .toList();
 }
 
 Future<List<Prayer>> loadPrayers() async {
   final raw = await rootBundle.loadString(_prayersAssetPath);
   final decoded = json.decode(raw) as List<dynamic>;
-  return decoded.map((e) => Prayer.fromJson(e as Map<String, dynamic>)).toList();
+  return decoded
+      .map((e) => Prayer.fromJson(e as Map<String, dynamic>))
+      .toList();
+}
+
+Future<VepresDay> loadVepres() async {
+  final raw = await rootBundle.loadString(_vepresAssetPath);
+  final decoded = json.decode(raw) as Map<String, dynamic>;
+  return VepresDay.fromJson(decoded);
+}
+
+Future<List<FratTopic>> loadFrats() async {
+  final raw = await rootBundle.loadString(_fratsAssetPath);
+  final decoded = json.decode(raw) as List<dynamic>;
+  return decoded
+      .map((e) => FratTopic.fromJson(e as Map<String, dynamic>))
+      .toList();
 }

@@ -4,6 +4,8 @@ import 'pages/welcome_page.dart';
 import 'pages/programme_page.dart';
 import 'pages/chants_page.dart';
 import 'pages/meditations_page.dart';
+import 'pages/vepres_page.dart';
+import 'pages/about_page.dart';
 import 'theme.dart';
 
 // Paths
@@ -11,6 +13,8 @@ const String routeWelcome = '/';
 const String routeProgramme = '/programme';
 const String routeChants = '/chants';
 const String routeMeditations = '/meditations';
+const String routeVepres = '/vepres';
+const String routeAbout = '/about';
 
 // Historique de navigation global (partagé entre toutes les instances)
 final _navigationHistory = <int>[0];
@@ -38,6 +42,16 @@ final GoRouter goRouter = GoRouter(
       name: 'meditations',
       builder: (context, state) => const RootScaffold(location: routeMeditations),
     ),
+    GoRoute(
+      path: routeVepres,
+      name: 'vepres',
+      builder: (context, state) => const RootScaffold(location: routeVepres),
+    ),
+    GoRoute(
+      path: routeAbout,
+      name: 'about',
+      builder: (context, state) => const RootScaffold(location: routeAbout),
+    ),
   ],
 );
 
@@ -56,6 +70,8 @@ class _RootScaffoldState extends State<RootScaffold> {
     routeProgramme,
     routeChants,
     routeMeditations,
+    routeVepres,
+    routeAbout,
   ];
 
   // Pages créées une seule fois et gardées en mémoire
@@ -64,6 +80,8 @@ class _RootScaffoldState extends State<RootScaffold> {
     ProgrammePage(),
     ChantsPage(),
     MeditationsPage(),
+    VepresPage(),
+    AboutPage(),
   ];
 
   int get _currentIndex {
@@ -72,6 +90,8 @@ class _RootScaffoldState extends State<RootScaffold> {
     if (widget.location == routeProgramme) return 1;
     if (widget.location == routeChants) return 2;
     if (widget.location == routeMeditations) return 3;
+    if (widget.location == routeVepres) return 4;
+    if (widget.location == routeAbout) return 5;
     return 0; // par défaut sur Accueil
   }
 
@@ -193,6 +213,14 @@ class _RootScaffoldState extends State<RootScaffold> {
                     NavigationDestination(
                       icon: Icon(Icons.auto_stories),
                       label: 'Méditations',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.wb_sunny_outlined),
+                      label: 'Vêpres',
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.info_outline),
+                      label: 'À propos',
                     ),
                   ],
                 ),

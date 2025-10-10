@@ -42,11 +42,12 @@ class MeditationsPage extends ConsumerWidget {
             Expanded(
               child: Consumer(builder: (context, ref, _) {
                 final prayersAsync = ref.watch(prayersProvider);
-                final showPrayers = ref.watch(_showPrayersProvider);
+                final fratsAsync = ref.watch(fratsProvider);
+                final view = ref.watch(_medPrayFratProvider);
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                   children: [
-                    if (!showPrayers) ...[
+                    if (view == _MedPrayFrat.meditations) ...[
                       _SectionTitle(
                         icon: Icons.auto_stories_outlined,
                         backgroundColor: _colorWithAlpha(kDore, 0.15),
@@ -74,11 +75,11 @@ class MeditationsPage extends ConsumerWidget {
                           ),
                         );
                       }),
-                    ] else ...[
+                    ] else if (view == _MedPrayFrat.prieres) ...[
                       _SectionTitle(
                         icon: Icons.volunteer_activism,
-                        backgroundColor: const Color(0x3381A3C1),
-                        iconColor: kOutremer,
+                        backgroundColor: _colorWithAlpha(kDore, 0.15),
+                        iconColor: kDore,
                         title: 'Prières',
                         subtitle: 'auprès de saint Michel',
                         isDarkMode: isDarkMode,
@@ -117,6 +118,38 @@ class MeditationsPage extends ConsumerWidget {
                           ],
                         ),
                       ),
+                    ] else ...[
+                      _SectionTitle(
+                        icon: Icons.group,
+                        backgroundColor: _colorWithAlpha(kDore, 0.15),
+                        iconColor: kDore,
+                        title: 'Temps de frat',
+                        subtitle: 'questions pour partager',
+                        isDarkMode: isDarkMode,
+                      ),
+                      const SizedBox(height: 12),
+                      fratsAsync.when(
+                        loading: () => const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(12),
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        error: (e, s) => Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Text('Erreur chargement frat: $e'),
+                        ),
+                        data: (topics) => Column(
+                          children: [
+                            for (final t in topics)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child:
+                                    _FratCard(topic: t, isDarkMode: isDarkMode),
+                              ),
+                          ],
+                        ),
+                      ),
                     ],
                   ],
                 );
@@ -129,7 +162,10 @@ class MeditationsPage extends ConsumerWidget {
   }
 }
 
-final _showPrayersProvider = StateProvider<bool>((ref) => false);
+enum _MedPrayFrat { meditations, prieres, frats }
+
+final _medPrayFratProvider =
+    StateProvider<_MedPrayFrat>((ref) => _MedPrayFrat.meditations);
 
 class _MedPraySwitch extends ConsumerWidget {
   const _MedPraySwitch({required this.isDarkMode});
@@ -138,7 +174,7 @@ class _MedPraySwitch extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showPrayers = ref.watch(_showPrayersProvider);
+    final current = ref.watch(_medPrayFratProvider);
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -149,19 +185,31 @@ class _MedPraySwitch extends ConsumerWidget {
         children: [
           Expanded(
             child: _SegmentButton(
-              selected: !showPrayers,
+              selected: current == _MedPrayFrat.meditations,
               icon: Icons.menu_book,
               label: 'Méditations',
-              onTap: () => ref.read(_showPrayersProvider.notifier).state = false,
+              onTap: () => ref.read(_medPrayFratProvider.notifier).state =
+                  _MedPrayFrat.meditations,
               isDarkMode: isDarkMode,
             ),
           ),
           Expanded(
             child: _SegmentButton(
-              selected: showPrayers,
+              selected: current == _MedPrayFrat.prieres,
               icon: Icons.volunteer_activism,
               label: 'Prières',
-              onTap: () => ref.read(_showPrayersProvider.notifier).state = true,
+              onTap: () => ref.read(_medPrayFratProvider.notifier).state =
+                  _MedPrayFrat.prieres,
+              isDarkMode: isDarkMode,
+            ),
+          ),
+          Expanded(
+            child: _SegmentButton(
+              selected: current == _MedPrayFrat.frats,
+              icon: Icons.group,
+              label: 'Frat',
+              onTap: () => ref.read(_medPrayFratProvider.notifier).state =
+                  _MedPrayFrat.frats,
               isDarkMode: isDarkMode,
             ),
           ),
@@ -205,17 +253,26 @@ class _SegmentButton extends StatelessWidget {
               size: 18,
               color: selected
                   ? kOutremer
-                  : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kOutremer, 0.7)),
+                  : (isDarkMode
+                      ? Colors.grey[500]
+                      : _colorWithAlpha(kOutremer, 0.7)),
             ),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: leagueSpartanStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: selected
-                    ? kOutremer
-                    : (isDarkMode ? Colors.grey[500] : _colorWithAlpha(kOutremer, 0.8)),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: leagueSpartanStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: selected
+                      ? kOutremer
+                      : (isDarkMode
+                          ? Colors.grey[500]
+                          : _colorWithAlpha(kOutremer, 0.8)),
+                ),
               ),
             ),
           ],
@@ -340,9 +397,7 @@ class _PrayerListCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDarkMode
-                ? const Color(0xFF1E1E1E)
-                : Colors.white,
+            color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isDarkMode
@@ -433,6 +488,100 @@ class _PrayerListCard extends StatelessWidget {
 
 // --- CLASSES ET FONCTIONS UTILITAIRES AU NIVEAU SUPERIEUR ---
 
+class _FratCard extends StatelessWidget {
+  const _FratCard({required this.topic, required this.isDarkMode});
+
+  final FratTopic topic;
+  final bool isDarkMode;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color:
+              isDarkMode ? Colors.grey[800]! : _colorWithAlpha(kOutremer, 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDarkMode
+                ? Colors.black.withValues(alpha: 0.3)
+                : _colorWithAlpha(kOutremer, 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _colorWithAlpha(kDore, 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '${topic.id}',
+                    style: leagueSpartanStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: kDore,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  topic.title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: isDarkMode ? Colors.white : kMarineFonce,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          for (final q in topic.questions)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('— ',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Text(
+                      q,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        height: 1.5,
+                        fontStyle: FontStyle.italic,
+                        color: isDarkMode
+                            ? Colors.white.withValues(alpha: 0.85)
+                            : _colorWithAlpha(kNoir, 0.85),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MeditationCard extends StatelessWidget {
   const _MeditationCard({
     required this.meditation,
@@ -499,7 +648,8 @@ class _MeditationCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: kDore,
                             borderRadius: BorderRadius.circular(8),
@@ -642,9 +792,8 @@ class MeditationDetailPage extends ConsumerWidget {
         Text(
           meditation.subtitle,
           style: theme.textTheme.titleMedium?.copyWith(
-            color: isDarkMode
-                ? Colors.grey[400]
-                : _colorWithAlpha(kOutremer, 0.8),
+            color:
+                isDarkMode ? Colors.grey[400] : _colorWithAlpha(kOutremer, 0.8),
             fontStyle: FontStyle.italic,
             height: 1.3,
           ),
@@ -672,7 +821,8 @@ class MeditationDetailPage extends ConsumerWidget {
     return widgets;
   }
 
-  Widget _buildSection(MeditationSection section, ThemeData theme, bool isDarkMode) {
+  Widget _buildSection(
+      MeditationSection section, ThemeData theme, bool isDarkMode) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -706,7 +856,8 @@ class MeditationDetailPage extends ConsumerWidget {
         // Points de réflexion
         if (section.bullets.isNotEmpty) ...[
           const SizedBox(height: 16),
-          ...section.bullets.map((bullet) => _buildBulletPoint(bullet, theme, isDarkMode)),
+          ...section.bullets
+              .map((bullet) => _buildBulletPoint(bullet, theme, isDarkMode)),
         ],
 
         // Prière
@@ -729,9 +880,8 @@ class MeditationDetailPage extends ConsumerWidget {
               : _colorWithAlpha(kMarine, 0.04),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isDarkMode
-                ? Colors.grey[800]!
-                : _colorWithAlpha(kMarine, 0.08),
+            color:
+                isDarkMode ? Colors.grey[800]! : _colorWithAlpha(kMarine, 0.08),
             width: 1,
           ),
         ),
@@ -833,9 +983,8 @@ class MeditationDetailPage extends ConsumerWidget {
         Expanded(
           child: Container(
             height: 1,
-            color: isDarkMode
-                ? Colors.grey[800]
-                : _colorWithAlpha(kOutremer, 0.2),
+            color:
+                isDarkMode ? Colors.grey[800] : _colorWithAlpha(kOutremer, 0.2),
           ),
         ),
         Padding(
@@ -852,9 +1001,8 @@ class MeditationDetailPage extends ConsumerWidget {
         Expanded(
           child: Container(
             height: 1,
-            color: isDarkMode
-                ? Colors.grey[800]
-                : _colorWithAlpha(kOutremer, 0.2),
+            color:
+                isDarkMode ? Colors.grey[800] : _colorWithAlpha(kOutremer, 0.2),
           ),
         ),
       ],
@@ -968,9 +1116,8 @@ class PrayerDetailPage extends ConsumerWidget {
             : _colorWithAlpha(kOutremer, 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDarkMode
-              ? Colors.grey[700]!
-              : _colorWithAlpha(kOutremer, 0.12),
+          color:
+              isDarkMode ? Colors.grey[700]! : _colorWithAlpha(kOutremer, 0.12),
           width: 1,
         ),
       ),

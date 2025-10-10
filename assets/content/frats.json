@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "title": "Temps de frat 1",
+    "questions": [
+      "Qu’est-ce que la sainteté pour moi ? Qu’est-ce qui me donne envie d’être saint ?",
+      "Quelles sont mes difficultés pour répondre à l’appel à la sainteté ?"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Temps de frat 2",
+    "questions": [
+      "Quel moment m’a le plus marqué durant ce pélé ?",
+      "Quel désir ai-je pour cette année ? Quels moyens puis-je prendre pour y répondre ?"
+    ]
+  }
+]
+
